@@ -14,6 +14,9 @@ service=createSyncService({directory,store,port:0,onStatus:status=>{for(const p 
 }});
 (async()=>{
  const started=await service.beginPairing();assert(started.ok);
+ // Simulator first boot can exceed the production two-minute pair window.
+ // Renew only this synthetic CI fixture; never change production lifetimes.
+ setInterval(()=>service.beginPairing().catch(()=>{console.error('Fixture pair window refresh failed');process.exitCode=1;}),45000).unref();
  const address=Object.values(os.networkInterfaces()).flat().find(x=>x&&!x.internal&&(x.family==='IPv4'||x.family===4)&&isPrivateAddress(x.address));assert(address,'Hosted Mac has no private IPv4 for the real simulator LAN test');
  fs.writeFileSync(path.join(root,'.local','apple-test-config.json'),JSON.stringify({address:'http://'+address.address+':'+service.getStatus().port}));
  fs.writeFileSync(path.join(root,'.local','apple-sync-ready.json'),JSON.stringify({pid:process.pid,ready:true}));

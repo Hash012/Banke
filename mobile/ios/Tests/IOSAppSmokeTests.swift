@@ -17,14 +17,17 @@ final class IOSAppSmokeTests: XCTestCase {
     }
     private func js(_ source: String) async throws -> Any? {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
-            host.webView.evaluateJavaScript(source) { value, error in
-                if let error = error { continuation.resume(throwing: error) }
-                else { continuation.resume(returning: value) }
+            host.webView.callAsyncJavaScript("return await (" + source + ");", arguments: [:], in: nil, in: .page) { result in
+                switch result {
+                case .success(let value): continuation.resume(returning: value)
+                case .failure(let error): continuation.resume(throwing: error)
+                }
             }
         }
     }
     private func wait(_ source: String, seconds: Int = 18) async throws {
-        for _ in 0..<(seconds * 5) {
+        let deadline = Date().addingTimeInterval(TimeInterval(seconds))
+        while Date() < deadline {
             if (try? await js(source)) as? Bool == true { return }
             try await Task.sleep(nanoseconds: 200_000_000)
         }
@@ -65,7 +68,7 @@ final class IOSAppSmokeTests: XCTestCase {
         XCTAssertEqual(initialCount, 0)
         XCTAssertEqual(webCrypto, true, "Actual WKWebView must support the shared encrypted protocol")
         try await snapshot("ios-initial-blank")
-        _ = try await js("document.getElementById('addEvent').click();document.getElementById('eventTitle').value='iOS simulator smoke';document.getElementById('eventStart').value='19:40';document.getElementById('eventEnd').value='20:00';document.getElementById('eventWeeks').value='1';document.getElementById('saveEvent').click();true")
+        _ = try await js("(()=>{document.getElementById('addEvent').click();document.getElementById('eventTitle').value='iOS simulator smoke';document.getElementById('eventStart').value='19:40';document.getElementById('eventEnd').value='20:00';document.getElementById('eventWeeks').value='1';document.getElementById('saveEvent').click();return true;})()")
         try await wait("window.BankeHost.loadState().state.events.length===1")
         try await snapshot("ios-offline-saved")
         host.webView.reload()
