@@ -82,3 +82,8 @@
 
 - iOS run 39271296063（1b5e123）成功；下载外层 artifact 摘要与安全解包、两个 XCTest 成功日志、实际 WKWebView 图片和服务端摘要均核验。新文档检查后，真实配对和加密双向往返在同一测试中成功，服务收到手机安排并将电脑改名回传。之前失败由测试导航时序引发，本轮未修改生产桥、协议或安全边界。
 - 审阅初始空白与离线保存后的模拟器快照，无地址、数字或私人日程；仅初始空白图进入公开 docs/media。真实 iPhone、本地网络弹窗等仍未测试。准备以 v1.3.2-apple-preview.1 独立预览发布，保留稳定 Latest v1.3.2。
+
+- 最终 Apple 源码/文档提交 1d0c974，快进 main 后 git push --atomic origin main apple-preview-1.3.2 refs/tags/v1.3.2-apple-preview.1 成功。无强推或稳定标签改写。
+- 创建独立预览草稿 417416943，手动上传 run 39272650415 成功。工作流复核成功的原生证据、最终 iOS 源码无变化、两种 Mac ASAR 逐项一致后上传七附件；本机再下载源码/验证 JSON/校验表，比较源码 135 文件与最终提交一致、四 Mac 摘要与本机一致。
+- 执行 .local/apple-release.py publish 后公开预发行；verify-public 对七附件完全不带凭据完整下载并核对大小/SHA-256，全部成功；Latest 仍为 v1.3.2。公开 README HTML 包含实际 Mac 图和既有真实动图/视频入口，图片和原文与本机一致。源码、成品、记录均位于 D:\Banke；未将私人版目录、运行数据或签名材料上传。
+- 本轮原生 Mac 和 iOS 模拟器结果不能替代物理设备验收；未测清单保留于 docs/APPLE.md、docs/TESTING.md 和发布说明。后补发布记录不改源标签和附件。

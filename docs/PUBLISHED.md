@@ -21,3 +21,8 @@
 | SHA256SUMS.txt | 486 | `8b082c4e641adbecd7340b2e445b3d4ad0fa44300326c5165d20f32334f5347e` |
 
 私人日程、配对、签名私钥和 .local 未发布。Windows 未配置发布者签名；Mac/iOS、多屏、睡眠唤醒、长期运行等未测范围见 [TESTING](TESTING.md)。
+
+
+## Apple 独立预览发行
+
+[v1.3.2-apple-preview.1](https://github.com/Hash012/Banke/releases/tag/v1.3.2-apple-preview.1) 已公开，七个附件匿名完整下载校验通过。Mac 提供两架构 DMG/ZIP，iPhone 提供可自行签名的完整源码。稳定 Latest 与既有 Windows/Android 包保持 v1.3.2。原生测试、签名限制和未测项目见 [APPLE](APPLE.md)。

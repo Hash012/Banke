@@ -58,3 +58,12 @@ python3 scripts/build_ios.py --device --simulator --test
 原始运行数据与日志只在 .local；仅审阅过的合成 App 截图可公开。Apple 源码白名单排除私钥、描述文件、Xcode 个人状态、运行存档和 SDK，iOS 不发布签名身份。源码和发行附件最终摘要见 Apple-SHA256SUMS.txt。
 
 WebKit 异步测试处理参考 [Apple callAsyncJavaScript 文档](https://developer.apple.com/documentation/webkit/wkwebview/callasyncjavascript(_:arguments:in:in:completionhandler:))；本地网络配置参考 [Apple NSAllowsLocalNetworking](https://developer.apple.com/documentation/bundleresources/information-property-list/nsapptransportsecurity/nsallowslocalnetworking)。测试保留异步操作并确认页面重载完成，不更改协议或允许任意公网 HTTP。
+
+
+## 公开发布结果
+
+已发布 [v1.3.2-apple-preview.1](https://github.com/Hash012/Banke/releases/tag/v1.3.2-apple-preview.1)，Release ID 417416943，标记为预发行；源标签提交 1d0c974。现有 Latest 稳定版仍为 v1.3.2，Windows/Android 既有附件未替换。
+
+手动上传 run [39272650415](https://github.com/Hash012/Banke/actions/runs/39272650415) 成功。草稿阶段再次比较四个 Mac 成品摘要、原生运行证明，以及源码 ZIP 中 135 个文件与标签源码逐字节一致；随后才公开发行。七个附件均不带凭据完整重新下载，文件长度、服务器 digest 与 Apple-SHA256SUMS.txt 全部匹配。公开 README 渲染的 Mac 图片、既有真实演示与 Apple 下载入口已检查，图片/源码与本机审阅版本相同。
+
+本地成品在 dist/apple-preview；完整私有运行证据与下载核验仅留 .local，未发布存档或签名身份。发布后文档提交不改写源标签或已验证附件。
