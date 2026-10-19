@@ -28,13 +28,31 @@
 
 Windows 包超过 GitHub 普通文件大小上限，应作为 Releases 附件分发；不要提交大 EXE、拆包让用户拼接，或把 Git LFS 指针当成可执行程序。代码仓库直接包含可构建源码。Windows 未配置发布者代码签名。
 
-Mac 与 iOS 本版尚未完成原生实测，也不提供冒充同功能版本的旧 Go 安装包。桌面源码可以保留普通窗口的平台分支，Windows 的桌面嵌入仅在 Windows 支持。具体边界见 [测试记录](docs/TESTING.md)。
+macOS 与 iPhone 的补充状态见下方 Apple 测试版；Windows/Android 稳定版继续使用上表附件。仓库根目录 `Banke-Source.zip` 保留稳定版源码快照，Apple 源码从独立测试发行下载。
+
+## Apple 测试版
+
+[Apple 预览发行页](https://github.com/Hash012/Banke/releases/tag/v1.3.2-apple-preview.1) · [Apple 构建与验收](docs/APPLE.md) · [iPhone 自行签名说明](mobile/ios/README.md)
+
+| 平台 | 下载 | 状态 |
+| --- | --- | --- |
+| Mac Apple Silicon（M 系列） | [DMG](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-arm64-preview.dmg) / [ZIP](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-arm64-preview.zip) | 原生 arm64 构建机运行通过；测试版 |
+| Mac Intel | [DMG](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-x64-preview.dmg) / [ZIP](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-x64-preview.zip) | 原生 Intel 构建机运行通过；测试版 |
+| iPhone | [完整 Xcode 源码](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-Apple-Source-1.3.2-preview.1.zip) | 在自己的 Mac/Xcode 选择团队签名安装；本轮不提供可直接安装的 IPA |
+
+Mac 包使用 ad-hoc 完整性签名，未经过 Developer ID 签名或 Apple 公证，首次下载可能被系统拦截。确认来源和摘要后，可参照 [Apple 官方说明](https://support.apple.com/zh-cn/102445) 对单个 App 选择“仍要打开”。安装时将 App 拖入“应用程序”，保留本机日程目录。构建目标为 macOS 12+，目前原生运行验证为 macOS 15；个人设备、Mission Control/触控板、登录启动和 Gatekeeper 首次打开仍待验证。
+
+下图为原生 macOS 构建机运行实际打包 App 的内部截图，初始日程为空；截图来源和测试边界见 [Apple 验收](docs/APPLE.md)。
+
+![macOS 社区版原生运行截图（CI 内部窗口截图）](docs/media/macos-native-ci.png)
 
 ## 独立数据与并存
 
 | 应用 | 数据与身份 |
 | --- | --- |
 | Windows 通用版 | `%APPDATA%\BankeCommunity`；程序 `BankeCommunity.exe`；应用 ID `org.banke.community.desktop` |
+| macOS 通用版 | `~/Library/Application Support/BankeCommunity`；应用 ID `org.banke.community.desktop` |
+| iOS 源码版 | 应用 ID `org.banke.community.ios`；自身沙盒内原子本地存储，排除系统云备份 |
 | Android 通用版 | 应用 ID `org.banke.community.mobile`；日程和配对保存在该应用独立的私有文件中 |
 | 私人版 | 保持自己的安装、数据和配对，不会被通用版自动导入或覆盖 |
 | 旧 Go 预览版 | 不同应用与协议；不是原地覆盖升级，需用户显式导出 JSON 后再选择导入 |
@@ -43,7 +61,7 @@ Mac 与 iOS 本版尚未完成原生实测，也不提供冒充同功能版本�
 
 ## 手机同步
 
-1. 安装本通用版 Windows 和 Android，两端连接可互通的可信私人 Wi-Fi。
+1. 安装本通用版电脑端和手机端，两端连接可互通的可信私人 Wi-Fi。Mac/iPhone 先阅读上方测试版说明；首次连接允许系统本地网络权限。
 2. 电脑打开“手机自动同步”，开启局域网同步，再点击“允许新手机配对 · 2 分钟”。
 3. 手机填写电脑显示的完整 IPv4 地址，点击连接。地址应包含实际端口，不要固定抄写旧地址。
 4. 在两台设备上核对八位数字一致，再在电脑允许连接。不要把数字或密钥发给别人。

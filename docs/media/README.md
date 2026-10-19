@@ -7,3 +7,10 @@
 README 的 GIF 是同一录制的缩小预览，完整 MP4 在 v1.3.2 Release。PNG 为同一录制的实际应用画面。仅对画面等比例缩放并补齐画布，没有改写、合成或替换 UI。视频抽帧已人工目视核对，未包含桌面背景、其他软件、地址、配对数字或私人日程。
 
 录制程序 app.asar SHA-256：4e372a007c592e32d340e2f5b3190b5e2ac017d1ee51c243c6362a0f95076165。它与已实测安装版、发行候选一致。展示内容不等于出厂预置日程；正式包首次打开为空白。
+## macOS 原生 CI 截图
+
+macos-native-ci.png 来自 Intel macOS 15 构建机实际打包 App 的空白普通窗口；macos-widget-ci.png 来自 arm64 同轮实际桌面挂件内部截图，唯一安排为合成 Apple packaged smoke。来源 run 39264627038。未编辑 UI、添加课表或合成设备外框；图片是应用内部截图，不冒称物理 Mac 屏幕最终合成证据。
+
+## iOS 原生模拟器截图
+
+ios-native-ci.png 来自 run 39271296063 的实际模拟器 App 内 WKWebView 初始空白快照，未配对前捕获；没有设备外框或私人数据。不冒称真实 iPhone 截屏。

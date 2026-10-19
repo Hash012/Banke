@@ -1,5 +1,11 @@
 # 更新记录
 
+## 1.3.2 Apple preview.1
+
+- 增加 macOS Intel/Apple Silicon 完整 DMG/ZIP 测试包及原生桌面层，默认空白并保持相同界面。
+- 增加可自行签名的 iOS Xcode 源码，与 Android 共用手机 UI 和加密协议，支持离线原子保存。
+- Apple 独立预览发行，不替换 Windows/Android v1.3.2 稳定附件。Mac 仅 ad-hoc 签名、未公证；iOS 不提供直接安装 IPA。原生验证与未测范围见 docs/APPLE.md。
+
 ## 1.3.2 通用版
 
 - 采用已实测正式版的 Electron 桌面 UI、右半屏桌面挂件、普通窗口恢复、备份与加密局域网同步；手机采用对应原 UI。

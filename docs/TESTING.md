@@ -32,3 +32,14 @@
 
 原始证据只保存在本机 .local/evidence：community-cold-start.json、community-portable.json、community-reinstall.json、community-cleanup.json、fresh-source-build.json、android-fresh-build.json，以及各 run-* 的窗口/导入记录。遮挡截图拒绝捕获；配对数字显示期间不保存截图。公开包不包含这些运行记录、截图或手机数据。测试未清理 AppData/手机数据、未取消原配对、未关闭防火墙。
 README 演示：用户明确授权公开演示媒体后，另建合成数据实际运行安装版，通过 Windows 原生 PrintWindow 连续录制，仅捕获自身内容。16.8 秒 H.264 视频逐帧可解码，已目视审核抽帧；GIF 与截图由同次录制取得。首次按屏幕抓取的尝试因遮挡及子窗口定位失败而废弃，未发布失败媒体，未将其计作产品故障。
+
+
+## Apple 补充测试（独立预览发行）
+
+macOS Intel 与 Apple Silicon 均在原生 macOS 15 构建机运行实际打包 App，通过首次空白、UI 保存、五轮固定/返回及原生负窗口层级读取、正常退出重开保留存档；ad-hoc 深度严格签名校验通过。内部渲染截图和原生窗口元数据不是物理 Mac 桌面最终合成证据。
+
+iOS 原生 run 39271296063 已通过设备/模拟器编译、真实 WKWebView 离线保存/新文档重载持久化、WebCrypto 和生产协议服务加密双向往返；原生存储与 URL 保护测试通过。最终运行结果、失败修正和测试范围见 [Apple 验收](APPLE.md)。不将未签名设备编译产物当作可安装 IPA。
+
+共享桌面入口修改后，原 Windows 电脑独立测试副本完成真实 UI Automation 五轮固定/返回和系统文件选择器导入取消、预览、提交、自动备份、错误及修订冲突保护；无 1400 或渲染错误。此前指针测试六轮成功，后因遮挡/焦点安全中止，未记作十轮通过。手机共用 mobile/web 与 Android 源码相对稳定标签 v1.3.2 无差异；没有更换 Android 签名或重发 APK。
+
+未测：个人 Mac 安装和 Gatekeeper、Mission Control/物理手势、多屏/DPI、登录启动、睡眠长期运行、Mac 原生导入/打印、Mac 与真实手机同步；真实 iPhone、本地网络权限弹窗、最低 iOS 版本、强制结束/后台/锁屏、TestFlight/App Store。

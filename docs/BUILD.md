@@ -45,4 +45,11 @@ powershell -NoProfile -File scripts/launch-community-diagnostic.ps1 -Profile com
 python scripts/package_release.py
 ```
 
-源码包从明确白名单构建，排除 .local、node_modules、dist、build、私钥和运行数据。完整安装包保留在 dist，发布前按 docs/TESTING.md 实机验收。Mac/iOS 尚无本次已验证发行包。
+源码包从明确白名单构建，排除 .local、node_modules、dist、build、私钥和运行数据。完整安装包保留在 dist，发布前按 docs/TESTING.md 实机验收。macOS 测试包与 iOS 源码见 [APPLE](APPLE.md)。
+## Apple 测试版
+
+macOS 原生构建使用 `npm run dist:mac -- --arm64` 或在 Intel Mac 上用 `--x64`。默认 ad-hoc 本机完整性签名，未做 Developer ID/公证。发布前在原生对应架构运行脚本与校验。
+
+iOS 从 mobile/ios/BankeCommunity.xcodeproj 构建，和 Android 共用 mobile/web；在自己的 Xcode 选择团队自行签名。`python3 scripts/build_ios.py --device --simulator --test` 要求 Mac/Xcode，不能在 Windows 上交叉编译宣称完成。详见 [iOS README](../mobile/ios/README.md) 与 [Apple 验收边界](APPLE.md)。
+
+Apple 完整源码包：`python3 scripts/package_apple_source.py`。发布工作流仅手动触发，要求事先存在的指定预览草稿和两平台成功原生验证，不上传个人 Apple 签名。

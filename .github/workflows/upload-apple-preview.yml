@@ -1,0 +1,48 @@
+name: Upload verified Apple preview draft
+on:
+  workflow_dispatch:
+    inputs:
+      source_tag:
+        description: Exact reviewed Apple preview tag
+        required: true
+        default: v1.3.2-apple-preview.1
+      release_id:
+        description: Existing Apple preview draft ID
+        required: true
+      mac_run_id:
+        description: Successful native Mac build run
+        required: true
+      ios_run_id:
+        description: Successful iOS simulator run
+        required: true
+permissions:
+  contents: read
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ inputs.source_tag }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - run: npm ci --ignore-scripts
+      - run: python scripts/audit_public.py
+      - name: Verify exact source, native evidence, and upload to the existing draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_TAG: ${{ inputs.source_tag }}
+          APPLE_RELEASE_ID: ${{ inputs.release_id }}
+          APPLE_MAC_RUN: ${{ inputs.mac_run_id }}
+          APPLE_IOS_RUN: ${{ inputs.ios_run_id }}
+        run: python scripts/upload_apple_preview.py
+# Does not create tags, alter stable releases, publish, sign with a certificate,
+# or upload signing material. A maintainer publishes after server hash review.
