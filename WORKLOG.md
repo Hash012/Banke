@@ -64,4 +64,6 @@
 - iOS 原生源码使用相同 mobile/web 与协议，增加同步保存的 WK 桥、原子存储和受限私网 URLSession；尚待 Xcode 编译、模拟器真实 WKWebView 运行。未生成、上传 Apple 证书或密钥。- Mac 复测 run 39263818991：Intel 与 Apple Silicon 均 success；实际 .app 编辑保存、五轮原生桌面层级/返回、正常重启保留数据全部通过。仍不是用户物理 Mac/Mission Control 验收。
 - 将测试包改为无开发者身份的 ad-hoc 签名，并增加 codesign --verify --deep --strict 检查；不称为 Apple 签名或公证。为明确指定的合成证据目录允许上传隐藏路径，未开放 .local 整体上传。该打包变化需要重新原生运行验证。- iOS 首轮在确定性工程检查阶段停止：ElementTree 在 Windows 将 scheme 的换行转换为 CRLF，Mac 重生成产生差异，尚未进入 Swift 编译。改为显式写入 UTF-8 字节和 LF，保留严格 diff 检查重新跑。
 - 添加 Xcode 用户状态、Apple 私钥/描述文件的忽略与公开包拒绝规则，不发布个人团队配置。
-- Windows 共享入口回归前备份旧合成测试目录；首轮真实指针切换六轮通过，随后因其他窗口遮挡安全停止，不记十轮通过。后续改为不与其他需要审批的操作并行做图形测试。
+- Windows 共享入口回归前备份旧合成测试目录；首轮真实指针切换六轮通过，随后因其他窗口遮挡安全停止，不记十轮通过。后续改为不与其他需要审批的操作并行做图形测试。- ad-hoc Mac run 39264627038：Intel、Apple Silicon 的 codesign 深度严格校验和真实打包应用运行均成功，已保留限定的合成截图/结果附件。
+- Windows 回归最终以真实 UI Automation 五轮固定/返回和系统文件选择器导入全路径通过，无 1400/preload/renderer 错误；六轮指针结果与后续遮挡/焦点中止单独保留，未写成十轮全部通过。诊断副本已正常退出，原手机测试配对目录未改动。
+- iOS 设备目标与模拟器目标已原生编译通过；随后模拟器创建脚本误选了不兼容新 runtime 的 iPhone 6s Plus 而停止，尚未运行 WKWebView 测试。增加最大/最小 runtime 范围匹配并优先采用已配置的兼容机型，再验证。

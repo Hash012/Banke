@@ -34,7 +34,14 @@ def main():
         candidates=[r for r in runtimes if r.get('isAvailable') and '.iOS-' in r['identifier'] and int(r['version'].split('.')[0])<=sdk[0]]
         if not candidates:raise RuntimeError('No matching installed iOS Simulator runtime; no tests claimed')
         selected=max(candidates,key=lambda x:tuple(map(int,x['version'].split('.'))))
-        types=json.loads(command(['xcrun','simctl','list','devicetypes','-j']))['devicetypes'];device=next(t for t in reversed(types) if t['name'].startswith('iPhone') and t.get('minRuntimeVersion',0)<=int(selected.get('version','0').split('.')[0])*65536)
+        types=json.loads(command(['xcrun','simctl','list','devicetypes','-j']))['devicetypes']
+        version=[int(x) for x in selected['version'].split('.')];version+=(3-len(version))*[0];packed=(version[0]<<16)+(version[1]<<8)+version[2]
+        compatible=[t for t in types if t['name'].startswith('iPhone') and t.get('minRuntimeVersion',0)<=packed<=t.get('maxRuntimeVersion',0xFFFFFFFF)]
+        available=json.loads(command(['xcrun','simctl','list','devices','available','-j']))['devices'].get(selected['identifier'],[])
+        configured={d.get('deviceTypeIdentifier') for d in available if d.get('isAvailable')}
+        known=[t for t in compatible if t['identifier'] in configured]
+        if not (known or compatible):raise RuntimeError('No compatible iPhone type for the selected runtime')
+        device=max(known or compatible,key=lambda t:(t.get('minRuntimeVersion',0),t['name']))
         udid=command(['xcrun','simctl','create','BankeCommunitySmoke-'+str(int(time.time())),device['identifier'],selected['identifier']]);(local/'ios-owned-simulator.txt').write_text(udid,encoding='utf-8')
         ready=local/'apple-sync-ready.json'
         if ready.exists():ready.unlink()
