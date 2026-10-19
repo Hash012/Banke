@@ -67,3 +67,5 @@ WebKit 异步测试处理参考 [Apple callAsyncJavaScript 文档](https://devel
 手动上传 run [39272650415](https://github.com/Hash012/Banke/actions/runs/39272650415) 成功。草稿阶段再次比较四个 Mac 成品摘要、原生运行证明，以及源码 ZIP 中 135 个文件与标签源码逐字节一致；随后才公开发行。七个附件均不带凭据完整重新下载，文件长度、服务器 digest 与 Apple-SHA256SUMS.txt 全部匹配。公开 README 渲染的 Mac 图片、既有真实演示与 Apple 下载入口已检查，图片/源码与本机审阅版本相同。
 
 本地成品在 dist/apple-preview；完整私有运行证据与下载核验仅留 .local，未发布存档或签名身份。发布后文档提交不改写源标签或已验证附件。
+
+最终 main 源提交 1d0c974 的常规 [Windows/Android 构建 run 39272583466](https://github.com/Hash012/Banke/actions/runs/39272583466) 两项也均成功；CI Android 临时签名包只作构建校验，未替换正式 APK。

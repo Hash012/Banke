@@ -87,3 +87,5 @@
 - 创建独立预览草稿 417416943，手动上传 run 39272650415 成功。工作流复核成功的原生证据、最终 iOS 源码无变化、两种 Mac ASAR 逐项一致后上传七附件；本机再下载源码/验证 JSON/校验表，比较源码 135 文件与最终提交一致、四 Mac 摘要与本机一致。
 - 执行 .local/apple-release.py publish 后公开预发行；verify-public 对七附件完全不带凭据完整下载并核对大小/SHA-256，全部成功；Latest 仍为 v1.3.2。公开 README HTML 包含实际 Mac 图和既有真实动图/视频入口，图片和原文与本机一致。源码、成品、记录均位于 D:\Banke；未将私人版目录、运行数据或签名材料上传。
 - 本轮原生 Mac 和 iOS 模拟器结果不能替代物理设备验收；未测清单保留于 docs/APPLE.md、docs/TESTING.md 和发布说明。后补发布记录不改源标签和附件。
+
+- 最后读取 main 常规构建 run 39272583466：Windows、Android 均 success，Apple 上传 run 39272650415 也 success。只补充此结果；不重复已通过的运行测试、不将临时签名 APK 发布为升级。
