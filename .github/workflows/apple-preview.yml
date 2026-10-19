@@ -34,6 +34,8 @@ jobs:
       - run: npm run dist:mac -- --${{ matrix.arch }}
       - name: Verify packed application source
         run: node scripts/verify_desktop.cjs "dist/mac${{ matrix.arch == 'arm64' && '-arm64' || '' }}/Banke Community.app/Contents/Resources/app.asar"
+      - name: Verify ad-hoc bundle seal (not Apple Developer ID or notarization)
+        run: codesign --verify --deep --strict "dist/mac${{ matrix.arch == 'arm64' && '-arm64' || '' }}/Banke Community.app"
       - name: Run actual packaged app and inspect native window levels
         run: |
           mkdir -p .local
@@ -47,6 +49,7 @@ jobs:
             dist/*-macOS-*-preview.zip
             .local/apple-evidence/*/*.png
             .local/apple-evidence/*/mac-results.json
+          include-hidden-files: true
           if-no-files-found: error
   ios:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apple-ios]') || contains(github.event.head_commit.message, '[apple-all]')
@@ -73,4 +76,5 @@ jobs:
           path: |
             .local/apple-evidence/ios/*.json
             .local/apple-evidence/ios/*.png
+          include-hidden-files: true
           if-no-files-found: error
