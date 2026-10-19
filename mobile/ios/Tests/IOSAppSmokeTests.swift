@@ -27,7 +27,7 @@ final class IOSAppSmokeTests: XCTestCase {
     // a callAsyncJavaScript completion while a native bridge Promise is pending.
     private func asyncJS(_ source: String) async throws -> Any? {
         _ = try await js("(()=>{const p=window.__appleSmoke={done:false};p.operation=Promise.resolve(" + source + ").then(v=>{p.value=v;p.done=true;},()=>{p.failed=true;p.done=true;});return true;})()")
-        try await wait("window.__appleSmoke.done", seconds: 40)
+        try await wait("!!window.__appleSmoke && window.__appleSmoke.done", seconds: 40)
         let failed = try await js("window.__appleSmoke.failed===true") as? Bool
         guard failed != true else { throw NSError(domain: "BankeAsyncSmoke", code: 1) }
         return try await js("window.__appleSmoke.value")
@@ -80,8 +80,9 @@ final class IOSAppSmokeTests: XCTestCase {
         try await wait("window.BankeHost.loadState().state.events.length===1")
         try await snapshot("ios-offline-saved")
         print("APPLE_SMOKE phase=offline-saved-reload")
+        _ = try await js("window.__appleBeforeReload=true;true")
         host.webView.reload()
-        try await wait("!!window.BankeHost && window.BankeHost.loadState().ok && window.BankeHost.loadState().state.events.length===1 && document.getElementById('app').getAttribute('aria-busy')==='false'")
+        try await wait("!window.__appleBeforeReload && !!window.BankeHost && window.BankeHost.loadState().ok && window.BankeHost.loadState().state.events.length===1 && document.getElementById('app').getAttribute('aria-busy')==='false'")
         let source = Bundle(for: Self.self).url(forResource: "apple-test-config", withExtension: "json")!
         let runtime = try JSONSerialization.jsonObject(with: Data(contentsOf: source)) as! [String: Any]
         var paired = false

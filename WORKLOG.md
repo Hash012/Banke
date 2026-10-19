@@ -61,11 +61,21 @@
 - 用户要求补充 macOS 和 iPhone；随后明确没有 Mac/Apple 开发者条件，选择先发布 Mac 测试版及可自行签名 iOS 源码。现有 v1.3.2 稳定标签和 Windows/Android 附件不变。
 - 在 apple-preview-1.3.2 分支修改；旧源码已本机备份。macOS 使用独立 NSView/NSWindow 原生桌面层，普通编辑窗口不嵌入其他进程；尚未把此设计记为实机通过。
 - npm test 仍为 55 通过、0 失败、1 跳过。原生 Apple Silicon 构建、源码逐项校验已通过；第一轮 Mac 打包应用运行测试过早读取初始化前的空状态而失败。修正测试等待真正 rendererReady/BankeView 后重新运行，不把编译成功当作运行成功。
-- iOS 原生源码使用相同 mobile/web 与协议，增加同步保存的 WK 桥、原子存储和受限私网 URLSession；尚待 Xcode 编译、模拟器真实 WKWebView 运行。未生成、上传 Apple 证书或密钥。- Mac 复测 run 39263818991：Intel 与 Apple Silicon 均 success；实际 .app 编辑保存、五轮原生桌面层级/返回、正常重启保留数据全部通过。仍不是用户物理 Mac/Mission Control 验收。
-- 将测试包改为无开发者身份的 ad-hoc 签名，并增加 codesign --verify --deep --strict 检查；不称为 Apple 签名或公证。为明确指定的合成证据目录允许上传隐藏路径，未开放 .local 整体上传。该打包变化需要重新原生运行验证。- iOS 首轮在确定性工程检查阶段停止：ElementTree 在 Windows 将 scheme 的换行转换为 CRLF，Mac 重生成产生差异，尚未进入 Swift 编译。改为显式写入 UTF-8 字节和 LF，保留严格 diff 检查重新跑。
+- iOS 原生源码使用相同 mobile/web 与协议，增加同步保存的 WK 桥、原子存储和受限私网 URLSession；尚待 Xcode 编译、模拟器真实 WKWebView 运行。未生成、上传 Apple 证书或密钥。
+- Mac 复测 run 39263818991：Intel 与 Apple Silicon 均 success；实际 .app 编辑保存、五轮原生桌面层级/返回、正常重启保留数据全部通过。仍不是用户物理 Mac/Mission Control 验收。
+- 将测试包改为无开发者身份的 ad-hoc 签名，并增加 codesign --verify --deep --strict 检查；不称为 Apple 签名或公证。为明确指定的合成证据目录允许上传隐藏路径，未开放 .local 整体上传。该打包变化需要重新原生运行验证。
+- iOS 首轮在确定性工程检查阶段停止：ElementTree 在 Windows 将 scheme 的换行转换为 CRLF，Mac 重生成产生差异，尚未进入 Swift 编译。改为显式写入 UTF-8 字节和 LF，保留严格 diff 检查重新跑。
 - 添加 Xcode 用户状态、Apple 私钥/描述文件的忽略与公开包拒绝规则，不发布个人团队配置。
-- Windows 共享入口回归前备份旧合成测试目录；首轮真实指针切换六轮通过，随后因其他窗口遮挡安全停止，不记十轮通过。后续改为不与其他需要审批的操作并行做图形测试。- ad-hoc Mac run 39264627038：Intel、Apple Silicon 的 codesign 深度严格校验和真实打包应用运行均成功，已保留限定的合成截图/结果附件。
+- Windows 共享入口回归前备份旧合成测试目录；首轮真实指针切换六轮通过，随后因其他窗口遮挡安全停止，不记十轮通过。后续改为不与其他需要审批的操作并行做图形测试。
+- ad-hoc Mac run 39264627038：Intel、Apple Silicon 的 codesign 深度严格校验和真实打包应用运行均成功，已保留限定的合成截图/结果附件。
 - Windows 回归最终以真实 UI Automation 五轮固定/返回和系统文件选择器导入全路径通过，无 1400/preload/renderer 错误；六轮指针结果与后续遮挡/焦点中止单独保留，未写成十轮全部通过。诊断副本已正常退出，原手机测试配对目录未改动。
-- iOS 设备目标与模拟器目标已原生编译通过；随后模拟器创建脚本误选了不兼容新 runtime 的 iPhone 6s Plus 而停止，尚未运行 WKWebView 测试。增加最大/最小 runtime 范围匹配并优先采用已配置的兼容机型，再验证。- iOS run 39265891717：真实 WKWebView 已完成加载、WebCrypto 检查、离线 UI 保存与页面重载；原生存储/URL 边界测试通过。异步配对测试使用 evaluateJavaScript 返回 Promise，WK 拒绝不支持的返回类型，故测试失败，未标记同步通过。
+- iOS 设备目标与模拟器目标已原生编译通过；随后模拟器创建脚本误选了不兼容新 runtime 的 iPhone 6s Plus 而停止，尚未运行 WKWebView 测试。增加最大/最小 runtime 范围匹配并优先采用已配置的兼容机型，再验证。
+- iOS run 39265891717：真实 WKWebView 已完成加载、WebCrypto 检查、离线 UI 保存与页面重载；原生存储/URL 边界测试通过。异步配对测试使用 evaluateJavaScript 返回 Promise，WK 拒绝不支持的返回类型，故测试失败，未标记同步通过。
 - 测试改用 callAsyncJavaScript 等待真实 Promise，按墙钟设等待截止；隔离 CI 服务定时重开自己的配对窗口，防止模拟器首次启动耗时超过两分钟。正式应用配对策略不变，需再次实际验证加密往返。
-- iOS run 39267531716 ??? WKWebView ???????WebKit ? Completion handler for function call is no longer reachable?33.6 ???????????????? 12 ?????????????????????????API 409????????????????? Promise ??????????? 40 ????Xcode ???????????????????????
+- iOS run 39267531716 的实际 WKWebView 异步测试失败：WebKit 报 Completion handler for function call is no longer reachable；33.6 秒测试耗时，模拟器初次准备耗时约 12 分钟，并非已确认应用死锁。取消请求时任务已经结束，API 409，未取消其他任务。测试改为页面持有 Promise 并轮询普通返回值，保留 40 秒截止；Xcode 阶段日志即时输出，正式桥和协议不变，重新验证。
+- Windows PowerShell 管道默认编码导致新追加中文变成问号；已显式 UTF-8 修正文档，应用源文件未受影响。
+
+- 已下载原生 run 39264627038 的两架构产物，外层 GitHub artifact 摘要、ZIP CRC、Mach-O CPU 类型、应用标识、签名资源与每种 28 个应用源码成员均核对一致。审阅后的空白窗口和合成挂件截图加入 docs/media；原始桌面/存档未上传。四个实际 Mac 成品复制至 dist/apple-preview，摘要再次一致。
+- Apple 完整源码白名单包逐成员摘要和隐私排除复核通过；新增发布工具只接受指定 Apple 预览草稿、成功的原生双架构/iOS 运行证据和最终标签源码，不覆盖稳定版或上传身份。公开发布仍待 iOS 本轮验证。
+
+- iOS run 39269819890 离线保存、重载前步骤和原生存储边界通过，配对阶段测试轮询超时。代码复核发现 reload() 后的就绪条件可在旧文档立即满足，导致随后的异步任务随导航被销毁；增加旧文档标记，要求新文档真正取代旧文档后再发起配对。尚待重跑证实，不将其写成正式同步故障根因。
