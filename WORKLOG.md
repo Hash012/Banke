@@ -56,3 +56,9 @@
 - 公开 README 的 HTML 确有内嵌真实 GIF 与完整 MP4 链接；公开图片/README 原文与本机审阅版本一致。MP4 的 84 帧均解码通过；GIF 优化合并静止帧后 15 帧、仍为 16.8 秒，未将帧合并误记为画面遗漏。
 - 录制用的两个独立演示进程均已通过界面正常退出，未结束其他进程。所有本地原始运行数据、发布凭据和签名保持未上传。
 - 发布后只补交文档验收结果，使用 [skip ci] 避免对未改应用重复构建；v1.3.2 标签及已验证附件保持原字节。完整公开结果记录在 docs/PUBLISHED.md，本地逐项下载凭据仅留 .local/release-public-verification.json（不含认证信息）。
+## Apple 测试版开发与授权
+
+- 用户要求补充 macOS 和 iPhone；随后明确没有 Mac/Apple 开发者条件，选择先发布 Mac 测试版及可自行签名 iOS 源码。现有 v1.3.2 稳定标签和 Windows/Android 附件不变。
+- 在 apple-preview-1.3.2 分支修改；旧源码已本机备份。macOS 使用独立 NSView/NSWindow 原生桌面层，普通编辑窗口不嵌入其他进程；尚未把此设计记为实机通过。
+- npm test 仍为 55 通过、0 失败、1 跳过。原生 Apple Silicon 构建、源码逐项校验已通过；第一轮 Mac 打包应用运行测试过早读取初始化前的空状态而失败。修正测试等待真正 rendererReady/BankeView 后重新运行，不把编译成功当作运行成功。
+- iOS 原生源码使用相同 mobile/web 与协议，增加同步保存的 WK 桥、原子存储和受限私网 URLSession；尚待 Xcode 编译、模拟器真实 WKWebView 运行。未生成、上传 Apple 证书或密钥。

@@ -26,7 +26,7 @@ async function target(role){
  for(let n=0;n<100;n++){
   const pages=await (await fetch('http://127.0.0.1:'+port+'/json/list')).json();
   for(const page of pages.filter(x=>x.type==='page'&&x.url.startsWith('file:'))){
-   let c;try{c=new CDP(page.webSocketDebuggerUrl);const i=await c.js('window.BankeDesktop && window.BankeDesktop.getInfo()');if(i&&i.role===role){connections.push(c);return c;}}catch{}if(c)c.close();
+   let c;try{c=new CDP(page.webSocketDebuggerUrl);const i=await c.js('window.BankeDesktop && window.BankeDesktop.getInfo()');if(i&&i.role===role&&await c.js('!!window.BankeView && document.readyState==="complete" && ("'+role+'"!=="desktop" || document.body.classList.contains("desktop-widget"))')){connections.push(c);return c;}}catch{}if(c)c.close();
   }await delay(200);
  }throw Error('Packaged renderer unavailable: '+role);
 }
