@@ -48,3 +48,29 @@ jobs:
             .local/apple-evidence/*/*.png
             .local/apple-evidence/*/mac-results.json
           if-no-files-found: error
+  ios:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apple-ios]') || contains(github.event.head_commit.message, '[apple-all]')
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Verify generated project and source-only privacy boundary
+        run: |
+          python scripts/generate_ios_project.py
+          git diff --exit-code -- mobile/ios/BankeCommunity.xcodeproj mobile/ios/Info.plist
+          python scripts/audit_public.py
+      - name: Native device compile and actual simulator WebView, storage, crypto and sync
+        run: python scripts/build_ios.py --device --simulator --test
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ios-native-smoke-evidence
+          path: |
+            .local/apple-evidence/ios/*.json
+            .local/apple-evidence/ios/*.png
+          if-no-files-found: error
