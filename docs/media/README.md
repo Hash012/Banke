@@ -18,3 +18,7 @@ macos-native-ci.png 来自 Intel macOS 15 构建机实际打包 App 的空白普
 ## iOS 原生模拟器截图
 
 ios-native-ci.png 来自 run 39271296063 的实际模拟器 App 内 WKWebView 初始空白快照，未配对前捕获；没有设备外框或私人数据。不冒称真实 iPhone 截屏。
+
+## 文本导入截图
+
+`text-import-desktop.png` 直接复制自 `.local/lotus-native-1792428449298/community/text-live/preview.png`。Windows 原生 Electron 源码运行、真实渲染器／IPC 的内部截图，输入为三条合成安排；没有私人课表、配对、密钥或其他软件画面。未经改绘，不冒称无遮挡桌面画面或手机实机。

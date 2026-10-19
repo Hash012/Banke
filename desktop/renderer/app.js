@@ -33,6 +33,20 @@
   let widgetFitFrame = 0;
   let widgetResizeObserver = null;
   let state = loadState();
+  const textImport = window.BankeTextImportUI.create({
+    getState:()=>{if(storageUnavailable||damagedData)throw Error('请先恢复本机保存服务，再导入文字。');return clone(state);},
+    today:shanghaiDate,readDrafts:()=>D.readTextDrafts(),stageDrafts:rows=>D.stageTextDrafts(rows),removeDraft:id=>D.removeTextDraft(id),
+    apply(rows,semesterStart){
+      if(storageUnavailable||damagedData)return {ok:false,error:'尚未保存，请先恢复本机保存服务。'};
+      const fresh=D.loadState();if(!fresh.ok||!fresh.state)return {ok:false,error:fresh.error||'无法读取最新日程。'};
+      if(fresh.state.semesterStart!==semesterStart)return {ok:false,error:'学期设置已变化，请重新识别。'};
+      const plan=window.BankeTextImport.prepare(fresh.state,rows);
+      const saved=plan.added.length?D.saveState(plan.state,shared(fresh.state)):{ok:true,state:fresh.state};
+      if(!saved.ok)return saved;
+      history.push(clone(state));if(history.length>30)history.shift();
+      state=clone(saved.state||plan.state);syncBaseline=shared(state);render();return {ok:true,...plan};
+    },changed:()=>render(),toast,editEvent:openEvent
+  });
 
   function shanghaiDate() {
     const parts = new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
@@ -338,7 +352,7 @@
     const [bg,accent,ink] = palette(event);
     el.style.setProperty('--event-bg',bg); el.style.setProperty('--event-accent',accent); el.style.setProperty('--event-ink',ink);
   }
-  function unresolvedPending() { return SEED.pending.filter(item => !state.events.some(event => event.id === item.id)); }
+  function unresolvedPending() { const drafts=D.readTextDrafts();return [...SEED.pending,...(drafts.ok?drafts.items:[])].filter(item => !state.events.some(event => event.id === item.id)); }
   function hours(minutes) { return Number((minutes / 60).toFixed(1)).toString(); }
   function setMetric(id,minutes) {
     $(id).replaceChildren(document.createTextNode(hours(minutes)),node('i','', '小时'));
@@ -361,7 +375,7 @@
     const marked = state.events.filter(event => event.uncertain);
     $('pendingCount').textContent = String(pending.length + marked.length);
     $('auditBanner').hidden = pending.length + marked.length === 0;
-    $('auditBannerText').textContent = pending.length ? pending.length + ' 条 AI 编程课待核对时间与周次' + (marked.length ? '，另有 ' + marked.length + ' 条标记待核对' : '') : marked.length + ' 条安排已标记为待核对';
+    $('auditBannerText').textContent = pending.length ? pending.length + ' 条安排待补全时间与周次' + (marked.length ? '，另有 ' + marked.length + ' 条日程待核对' : '') : marked.length + ' 条安排已标记为待核对';
     $('calendarPanel').hidden = currentPage !== 'calendar'; $('coursesPanel').hidden = currentPage !== 'courses'; $('pendingPanel').hidden = currentPage !== 'pending';
     ['Calendar','Courses','Pending'].forEach((suffix,index) => {
       const selected = currentPage === ['calendar','courses','pending'][index];
@@ -467,14 +481,16 @@
   function renderPending() {
     const panel = $('pendingPanel'); panel.replaceChildren();
     const heading = node('div','pending-heading');
-    heading.append(node('h2','','让每一门课都有准确的位置'),node('p','','手机课表中的两条 AI 编程课，起止时间与重复周次无法从图片可靠辨认。它们暂不占用网格；填写确认过的时间后就会加入课程。'));
+    heading.append(node('h2','','把安排核对清楚'),node('p','','缺少关键信息的草稿暂不占用网格；补齐后加入日程。带疑点的日程已显示在日程表中，可在这里核对。草稿仅保存在当前电脑，加入日程后可同步。'));
     panel.append(heading);
+    const draftStatus=D.readTextDrafts();if(!draftStatus.ok)panel.append(node('p','storage-warning',draftStatus.error));
     const list = unresolvedPending();
     for (const item of list) {
       const card = node('div','pending-item'); const body = node('div','pending-body');
-      body.append(node('span','pending-tag','时间与周次待确认'),node('h3','',item.title+' · '+days[item.day-1]),node('p','',item.notes),node('div','pending-meta',item.location+' · 仅能确认在第 6 周截图中出现'));
-      const button = node('button','button secondary','补充时间 →'); button.addEventListener('click',() => openPending(item));
+      body.append(node('span','pending-tag','时间与周次待确认'),node('h3','',item.title||'未命名安排'),node('p','',item.source||item.notes),node('div','pending-meta',(item.warnings||[]).join('；')));
+      const button = node('button','button secondary','补全并预览 →'); button.addEventListener('click',() => item.source?textImport.openDraft(item).catch(e=>toast(e.message)):openPending(item));
       card.append(body,button); panel.append(card);
+      if(item.source){const remove=node('button','button secondary','移除草稿');remove.onclick=()=>{const r=D.removeTextDraft(item.id);if(!r.ok)toast(r.error);render();};card.append(remove);}
     }
     const marked = state.events.filter(event => event.uncertain);
     for (const item of marked) {
@@ -652,6 +668,8 @@
     updateView(next=>{next.selectedWeek=week;});
   }
   function initialize() {
+    $('textImportButton').onclick=()=>textImport.open().catch(e=>toast(e.message));
+    D.onTextDrafts(()=>render());
     $('weekSelect').replaceChildren();$('settingRangeStart').replaceChildren();$('settingRangeEnd').replaceChildren();
     for(let week=1;week<=24;week++){const option=node('option','', '第 '+week+' 周');option.value=String(week);$('weekSelect').append(option);}
     for(let minute=0;minute<=1440;minute+=30){

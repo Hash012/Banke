@@ -8,7 +8,7 @@ ROOT_FILES=('README.md','LICENSE','SECURITY.md','VERSION','WORKLOG.md','CHANGELO
 SKIP={'.local','node_modules','build','dist','.git','__pycache__','.gradle','DerivedData','xcuserdata','project.xcworkspace'}
 BINARY={'.png','.ico','.icns','.gif'}
 FORBIDDEN={'.pem','.pk8','.key','.jks','.keystore','.p12','.asar','.exe','.apk','.zip','.pyc','.p8','.pfx','.mobileprovision','.provisionprofile','.xcuserstate','.ipa'}
-RUNTIME={'schedule.json','schedule.previous.json','schedule-sync.json','sync-state.json','sync-config.json','window-preferences.json','lotus-preferences.json','server-info.json','community-bundle.json'}
+RUNTIME={'schedule.json','schedule.previous.json','schedule-sync.json','sync-state.json','sync-config.json','window-preferences.json','lotus-preferences.json','text-import-drafts.json','server-info.json','community-bundle.json'}
 def source_files(root=ROOT):
     files=[root/name for name in ROOT_FILES if (root/name).is_file()]
     for folder in DIRS:

@@ -1,5 +1,32 @@
 # 通用版验收
 
+## 2026-10-20：1.3.4 文本导入验收
+
+无 Computer Use。Windows 原生 Electron 运行两版源码的真实渲染器／preload／IPC；DOM 自动化与内部截图不等于物理输入或 Android 真机验收。
+
+- `npm test`：73 项，72 通过、0 失败、1 因符号链接权限跳过。新增 9 项覆盖中文时间、日期与参考周、单双周、多星期、缺字段／非法日期／跨日草稿、重复和部分覆盖周次、大小限制、损坏与失败保存、独立原子存储及两端模块一致。
+- 两版原生源码：预览前未写日程；2 条有效日程、1 条待补全；待核对计数、重复默认跳过、草稿补全、取消、真实草稿路径写入失败保留预览、恢复后重试、WorkerW 挂件入口及正常退出通过。冷启动后 3 条日程与 1 条草稿恢复，零渲染／preload 错误。
+- 证据：`.local/lotus-native-1792428449298/{community,private}/text-{live,cold}/result.json` 与内部截图。私有测试副本使用公开空白 seed，不把真实课表或真实存档作为 fixture。
+- 两版手机页面：原生 Windows Electron 手机宽度运行实际 mobile adapter，文件存储桥接为明确标注的合成测试桥；导入、无横向溢出、重载草稿恢复、返回键释放 inert 通过。最终证据 `.local/text-mobile-community-1792428670785`、`.local/text-mobile-private-1792428675342`。这些结果不代表 Android 真机安装／软键盘／物理触摸／新功能跨设备同步已验收。
+- 手机测试入口最初过早 capturePage 出现 UnknownVizError；显式显示／invalidate 并等待绘制后消失。随后测试注入多行文本转义错误，修正为 JSON 字面量后两版通过。这两项为验收脚本问题，未用失败结果宣称通过。
+- 用户提供私有 APK 原件存入 `.local/private-mobile/original`；更新后的私有 web 资源存入 `.local/private-mobile/text-import-assets/web`。缺原签名私钥与 Android 原生工程，不生成改签私有升级 APK。原 APK 不是签名私钥。
+
+复测：`node scripts/prepare-lotus-native.cjs` 后用 Windows 原生 Electron 运行 `scripts/verify-text-import-native.cjs --suite=<目录> --edition=community|private`，再带 `--cold` 验证恢复；`python scripts/prepare-text-import-mobile.py` 准备忽略目录，再用原生 Electron 运行 `scripts/verify-text-import-mobile.cjs --edition=community|private`。所有新测试仅写独立合成目录。
+
+最终审阅补充：明确周次与“下周”矛盾时不猜周次，转待补全；增加回归断言并重建两版最终包。最终完整 EXE 通过预览、补全、重复、矛盾周次预览与冷启动，证据 `.local/text-packaged-community-1792429594165`、`.local/text-packaged-private-1792429594093`。最终手机页面证据 `.local/text-mobile-community-1792429594287`、`.local/text-mobile-private-1792429589861`，另验证移除草稿即时刷新计数。
+
+私有版已按授权原位更新最终 1.3.4：先正常退出并完整冷备程序与 66 个数据文件，替换并校验 145 个程序文件，原卸载器、快捷方式及桌宠设置保留。备份 `.local/private-upgrade-134-20261020-010659`；正常真实数据路径重开，日程字节、完成项、服务身份和原配对密钥保留，UIA／Win32 确认莲花及最新文案。实际安装版左栏导入空弹窗已通过 UIA 打开／关闭，不加入合成日程；随后恢复原桌面模式。
+
+首次 CloseMainWindow 未退出桌面模式，保护逻辑中止，未替换文件；改为已核实路径／PID／普通编辑器 HWND 的 WM_CLOSE 正常退出，没有强杀未知进程。首次 UIA 在桌面挂件隐藏左栏找不到入口，未发送导入；经应用原单实例恢复普通窗口后定位成功。最终数据保留核验再次通过。
+
+Android 1.3.4 已由公开 Java 与网页源码构建，官方 apksigner 验证通过；与旧 1.3.2 APK 的证书 SHA-256 相同，`8f25b2b3b02225fbd0860acaeb16b08be15a3140fbc7f247c08e010525002b40`。APK 内网页逐字节匹配，空 seed 保持。没有换签，私钥未上传。
+
+最终完整 NSIS 在独立目录真实新装、从 1.3.3 覆盖升级均成功，各 147 个文件核对一致；原社区版注册、快捷方式恢复，真实程序、日程及配对摘要不变。记录 `.local/community134-install-20261020-010935/result.json`。新装／升级后的实际程序分别通过真实导入、补全、重复跳过、矛盾周次与冷启动恢复，证据 `.local/text-packaged-community-1792429912655`、`.local/text-packaged-community-1792429915465`。
+
+完整便携 ZIP 独立解压后真实 EXE 同样通过，证据 `.local/text-packaged-community-1792429915187`。两版 ASAR 与各自源代码分别 40／38 个应用文件逐字节一致，ZIP 与运行目录分别 146／145 个文件一致、CRC 通过；没有诊断入口、测试、fixture、`.local`。报告 `.local/release134-artifact-audit.json`。公开源码白名单审计通过，用户的 `image.png` 未打包或提交。
+
+本轮 Android 真机、软键盘、物理手势、新功能跨设备同步、Mac/iPhone、锁屏、睡眠唤醒、长期运行与 DeepSeek 未测；本功能不调用 DeepSeek。发布与公开下载核验在 PUBLISHED.md 记录。
+
 ## 2026-10-20：1.3.3 正式发行前验收
 
 用户明确授权私有版原位更新、通用版发布及 README 同步。电脑版版本统一为 1.3.3，Android 保留已发布原签名 1.3.2；手机网页、空 seed 与协议未改。无 Computer Use，实际方式继续为原生 Windows Electron、Win32、Windows UI Automation 与仅测试实例的本地 CDP。

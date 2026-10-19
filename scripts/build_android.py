@@ -25,8 +25,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--sdk',type=Path,default=Path(os.getenv('ANDROID_HOME') or os.getenv('ANDROID_SDK_ROOT') or ROOT/'.local/android-sdk'))
     p.add_argument('--key',type=Path,required=True);p.add_argument('--cert',type=Path,required=True)
-    p.add_argument('--generate-key',action='store_true');p.add_argument('--out',type=Path,default=ROOT/'dist/Banke-Community-Android-1.3.2.apk')
+    p.add_argument('--generate-key',action='store_true');p.add_argument('--out',type=Path)
     a=p.parse_args();sdk=a.sdk.resolve();tools=sdk/'build-tools/35.0.0';android=sdk/'platforms/android-35/android.jar';suffix='.exe' if os.name=='nt' else ''
+    if a.out is None:
+        import xml.etree.ElementTree as ET
+        version=ET.parse(ROOT/'mobile/android/AndroidManifest.xml').getroot().get('{http://schemas.android.com/apk/res/android}versionName')
+        a.out=ROOT/'dist'/f'Banke-Community-Android-{version}.apk'
     for f in [android,tools/('aapt2'+suffix),tools/('zipalign'+suffix),tools/'lib/d8.jar',tools/'lib/apksigner.jar']:
         if not f.is_file():raise SystemExit('Missing official Android SDK file: '+str(f))
     if a.generate_key:generate(a.key,a.cert)

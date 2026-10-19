@@ -1,5 +1,11 @@
 # 社区版发行
 
+## 1.3.4 · 文本识别导入
+
+沿用用户已明确授权的私有版更新、通用版发布和 README 同步。Windows 与 Android 更新到 1.3.4；Apple 已发布预览仍为 1.3.2。新功能采用离线解析与确认预览，不提供 DeepSeek 配置。下载目标为 v1.3.4；是否已经公开，以 PUBLISHED.md 的实际核验为准。
+
+私有手机旧 APK 和更新 web 资源仅留在忽略目录，缺原签名，不能冒充可覆盖安装的升级包。新版公开 APK 仅使用原通用版稳定签名。
+
 ## 1.3.3 · 莲花桌宠
 
 用户于 2026-10-20 明确授权：私有版更新到原安装位置，通用版发布并同步 README。当前 Windows 发行目标为 [v1.3.3](https://github.com/Hash012/Banke/releases/tag/v1.3.3)，附件限定为完整 NSIS 安装器、完整便携 ZIP、公开源码 ZIP、release-manifest.json 与 SHA256SUMS.txt。手机版继续使用 [原签名 Android 1.3.2](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Android-1.3.2.apk)，不把临时签名验证 APK 当作升级。Apple 附件仍为独立 1.3.2 预览。

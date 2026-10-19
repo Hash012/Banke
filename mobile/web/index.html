@@ -7,11 +7,15 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>半刻 · 周计划</title>
   <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="text-import.css">
   <script defer src="core.js"></script>
   <script defer src="seed.js"></script>
   <script defer src="mobile-model.js"></script>
   <script defer src="sync-core.js"></script>
   <script defer src="adapter.js"></script>
+  <script defer src="text-import.js"></script>
+  <script defer src="text-import-drafts.js"></script>
+  <script defer src="text-import-ui.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -26,6 +30,7 @@
         <button class="text-button" id="goToday" type="button">回到今天</button>
       </div>
       <nav class="day-strip" id="dayStrip" aria-label="选择星期"></nav>
+      <div class="week-row"><button class="text-button" type="button" id="textImportButton">✎ 文本识别导入</button><button class="text-button" type="button" id="textPendingButton">待核对 <span id="textPendingCount">0</span></button></div>
     </header>
 
     <section id="scheduleView" class="schedule-view" aria-label="日程">

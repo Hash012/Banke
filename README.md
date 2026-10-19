@@ -1,10 +1,32 @@
 # 半刻 Banke · 把日子安排得刚刚好
 
-**Windows 1.3.3 · 莲花桌宠与日程提醒 · Android 1.3.2 · 默认空白日程 · MIT**
+**Windows / Android 1.3.4 · 文本识别导入 · 莲花桌宠 · 默认空白日程 · MIT**
 
 桌面端保留周计划、课程与安排、待核对、分钟精度、撤销、JSON/CSV/HTML 导出、备份导入、打印、桌面右半屏挂件、返回普通窗口、任务栏/托盘和局域网加密同步。手机版使用同一正式版的手机界面，可先离线编辑，再与电脑配对同步。
 
 通用版只移除了私人初始课表和个性化数据，并分离应用标识、存档、配对与开机启动项。首次打开没有课程，不扫描、不读取、不迁移私人版的数据。
+
+## 文本识别导入
+
+Windows 左栏点击 **文本识别导入**；手机在顶部点击同名按钮。粘贴文字，点击“识别并预览”，可逐条修改名称、星期、起止时间、周次、类型和地点，勾选后确认导入。取消预览不会写入日程。
+
+```text
+第1-16周（单周）
+周一、周三 09:00-10:00 数学 @A楼
+明天下午三点到五点 项目讨论
+周五 写报告（时间待定）
+```
+
+支持中文或数字时间、明确日期、今天／明天／后天、本周／下周、多个星期及单双周。相对日期按北京时间计算；未写周次暂用当前查看周，并标记待核对。复杂自然语言可能识别不全，请检查预览。
+
+- 时间完整但有疑点：加入日程表，同时显示在“待核对”；核实后可清除标记。
+- 缺名称、日期、起止时间或有效周次：只保留待补全草稿，不编造时间占用网格；在“待核对”补齐并预览后加入。
+- 同名、同星期、同时间、同地点的重复周次自动跳过；只补上尚未存在的周次。
+- 草稿仅保存在当前设备，补齐成为日程后按原配对同步。电脑版草稿独立存储；手机草稿保存在应用 WebView 本地存储。
+
+本版采用**离线规则解析**，不调用人工智能，不发送输入内容，不需要 DeepSeek API Key；暂不提供 DeepSeek 配置。
+
+![文本导入：真实 Windows 原生窗口中的合成预览](docs/media/text-import-desktop.png)
 
 ## 莲花桌宠 · 念念相续
 
@@ -26,19 +48,19 @@ Windows 1.3.3 新增禅意莲花桌宠。点击右上角 **❀** 或桌面菜单
 
 ## 下载与安装
 
-从 [v1.3.3 正式下载页](https://github.com/Hash012/Banke/releases/tag/v1.3.3) 获取新版 Windows 完整安装包，或点击下表直接下载。本次更新电脑版；Android 继续使用原签名的 1.3.2。校验与实测边界见 [发布记录](docs/RELEASE.md)。**旧 v1.1.0 Release 是不同界面、不同协议的 Go 预览版，不是此版本；不要混装配对。**
+从 [v1.3.4 正式下载页](https://github.com/Hash012/Banke/releases/tag/v1.3.4) 获取新版 Windows 完整安装包，或点击下表直接下载。本次同步更新 Windows 和 Android；Android 沿用稳定签名，保留原应用数据。校验与实测边界见 [发布记录](docs/RELEASE.md)。**旧 v1.1.0 Release 是不同界面、不同协议的 Go 预览版，不是此版本；不要混装配对。**
 
 | 文件 | 用途 |
 | --- | --- |
-| [Banke-Community-Setup-1.3.3-x64.exe](https://github.com/Hash012/Banke/releases/download/v1.3.3/Banke-Community-Setup-1.3.3-x64.exe) | Windows 10/11 x64 完整离线安装包，含莲花桌宠；不需要浏览器、Node、Python 或 Go；可选择安装目录 |
-| [Banke-Community-1.3.3-Windows-x64.zip](https://github.com/Hash012/Banke/releases/download/v1.3.3/Banke-Community-1.3.3-Windows-x64.zip) | Windows 完整便携包；完整解压后启动 `BankeCommunity.exe` |
-| [Banke-Community-Android-1.3.2.apk](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Android-1.3.2.apk) | Android 8+、仍兼容 APK 的 HarmonyOS；不是 HarmonyOS NEXT 原生 HAP |
-| [Banke-Source.zip](https://github.com/Hash012/Banke/releases/download/v1.3.3/Banke-Source.zip) | 1.3.3 完整公开源码与构建、测试说明 |
-| [SHA256SUMS.txt](https://github.com/Hash012/Banke/releases/download/v1.3.3/SHA256SUMS.txt) | 1.3.3 Windows 与源码成品 SHA-256 校验清单 |
+| [Banke-Community-Setup-1.3.4-x64.exe](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-Setup-1.3.4-x64.exe) | Windows 10/11 x64 完整离线安装包，含文本导入与莲花桌宠；不需要浏览器、Node、Python 或 Go；可选择安装目录 |
+| [Banke-Community-1.3.4-Windows-x64.zip](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-1.3.4-Windows-x64.zip) | Windows 完整便携包；完整解压后启动 `BankeCommunity.exe` |
+| [Banke-Community-Android-1.3.4.apk](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-Android-1.3.4.apk) | Android 8+、仍兼容 APK 的 HarmonyOS；不是 HarmonyOS NEXT 原生 HAP |
+| [Banke-Source.zip](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Source.zip) | 1.3.4 完整公开源码与构建、测试说明 |
+| [SHA256SUMS.txt](https://github.com/Hash012/Banke/releases/download/v1.3.4/SHA256SUMS.txt) | 1.3.4 Windows、Android 与源码成品 SHA-256 校验清单 |
 
 Windows 包超过 GitHub 普通文件大小上限，应作为 Releases 附件分发；不要提交大 EXE、拆包让用户拼接，或把 Git LFS 指针当成可执行程序。代码仓库直接包含可构建源码。Windows 未配置发布者代码签名。
 
-macOS 与 iPhone 的补充状态见下方 Apple 测试版；其附件仍为 1.3.2 独立预览，尚未包含本次莲花桌宠实机验收。仓库根目录 `Banke-Source.zip` 为 1.3.3 源码快照，Android 签名与 1.3.2 APK 不变。
+macOS 与 iPhone 的补充状态见下方 Apple 测试版；其附件仍为 1.3.2 独立预览，尚未包含本次莲花桌宠实机验收。仓库根目录 `Banke-Source.zip` 为 1.3.4 源码快照，Android 签名保持不变，根目录 `Banke-Android.apk` 为 1.3.4。
 
 ## Apple 测试版
 

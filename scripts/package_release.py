@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Package only public sources. Keep large complete installers in dist/Releases."""
 from pathlib import Path
-import argparse,hashlib,json,shutil,zipfile
+import argparse,hashlib,json,shutil,zipfile,xml.etree.ElementTree as ET
 from audit_public import audit,ROOT
 STAMP=(2026,10,20,0,0,0)
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -20,17 +20,18 @@ def main():
         z.writestr('banke/SOURCE_SHA256SUMS.txt','\n'.join(sums)+'\n')
     with zipfile.ZipFile(archive) as z:assert z.testzip() is None
     shutil.copy2(archive,ROOT/'Banke-Source.zip')
-    apk=out/'Banke-Community-Android-1.3.2.apk'
+    android_version=ET.parse(ROOT/'mobile/android/AndroidManifest.xml').getroot().get('{http://schemas.android.com/apk/res/android}versionName')
+    apk=out/f'Banke-Community-Android-{android_version}.apk'
     if apk.exists():shutil.copy2(apk,ROOT/'Banke-Android.apk')
     names=[f'Banke-Community-Setup-{version}-x64.exe',f'Banke-Community-{version}-Windows-x64.zip','Banke-Source.zip']
-    if not args.desktop_only:names.insert(2,'Banke-Community-Android-1.3.2.apk')
+    if not args.desktop_only:names.insert(2,apk.name)
     products=[out/n for n in names]
     video=out/'Banke-Community-Demo-1.3.2.mp4'
     if video.is_file() and not args.desktop_only:products.append(video)
     if not all(p.is_file() for p in products):raise SystemExit('A complete release requires all selected actual products')
     rootfiles=[ROOT/'Banke-Android.apk',ROOT/'Banke-Source.zip']
     (ROOT/'SHA256SUMS.txt').write_text(''.join(sha(p)+'  '+p.name+'\n' for p in rootfiles),encoding='utf-8',newline='\n')
-    manifest={'version':version,'scope':'windows-desktop' if args.desktop_only else 'windows-and-android','desktopApplicationId':'org.banke.community.desktop','androidApplicationId':'org.banke.community.mobile','androidVersion':'1.3.2','androidUnchanged':args.desktop_only,'defaultEvents':0,'electron':'44.9.0','artifacts':[{'file':p.name,'bytes':p.stat().st_size,'sha256':sha(p)} for p in products]}
+    manifest={'version':version,'scope':'windows-desktop' if args.desktop_only else 'windows-and-android','desktopApplicationId':'org.banke.community.desktop','androidApplicationId':'org.banke.community.mobile','androidVersion':android_version,'androidUnchanged':args.desktop_only,'defaultEvents':0,'electron':'44.9.0','artifacts':[{'file':p.name,'bytes':p.stat().st_size,'sha256':sha(p)} for p in products]}
     (out/'release-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
     (out/'SHA256SUMS.txt').write_text(''.join(sha(p)+'  '+p.name+'\n' for p in products+[out/'release-manifest.json']),encoding='utf-8',newline='\n')
     print(json.dumps(manifest,indent=2))

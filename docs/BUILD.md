@@ -16,15 +16,17 @@ npm run dist:win
 
 `dist:win` 生成完整 NSIS 安装器和完整便携 ZIP；安装器是从公开配置新构建的，不再以私人安装包作输入或修改其字节。应用 ID、安装注册、快捷方式、数据和开机启动项均独立。卸载不自动删除 AppData。签名证书不附在仓库内；当前 Windows 包未做发布者代码签名。
 
-## 1.3.3 Windows 发行
+## 1.3.4 Windows / Android 发行
 
 ```powershell
-npm run dist:win -- --config.directories.output=dist/1.3.3
-node scripts/verify_desktop.cjs dist/1.3.3/win-unpacked/resources/app.asar
-python scripts/package_release.py --desktop-only --out dist/1.3.3
+npm run dist:win -- --config.directories.output=dist/1.3.4
+node scripts/verify_desktop.cjs dist/1.3.4/win-unpacked/resources/app.asar
+# 用原稳定签名构建 Android，不能为覆盖升级重新生成签名：
+python scripts/build_android.py --sdk C:\Android\Sdk --key .local/signing/community.pk8 --cert .local/signing/community-cert.pem --out dist/1.3.4/Banke-Community-Android-1.3.4.apk
+python scripts/package_release.py --out dist/1.3.4
 ```
 
-输出完整 NSIS 安装器、完整 ZIP、公开源码和校验清单；不替换旧版附件。完整解压 ZIP 后运行 `BankeCommunity.exe`。构建不包含诊断入口、tests、fixture 或 `.local`。本轮只发行 Windows 1.3.3；Android 保留原签名 APK 1.3.2，不生成同名换签名升级。Apple 已发布附件仍为独立预览。
+输出完整 NSIS 安装器、完整 ZIP、原签名 Android APK、公开源码和校验清单；不替换旧版附件。完整解压 ZIP 后运行 `BankeCommunity.exe`。构建不包含诊断入口、tests、fixture 或 `.local`。1.3.4 同步增加文本导入，Android 沿用 1.3.2 的稳定签名；Apple 已发布附件仍为独立预览。
 
 原生合成测试脚本为 `prepare-lotus-native.cjs`、`verify-lotus-native.cjs`、`test-lotus-input.ps1` 和 `verify-lotus-packaged.cjs`；后者支持第二个参数指定已安装／便携程序绝对路径。运行方式与结果见 TESTING。上轮 1.3.2 Lotus-Preview 成品只作为本机历史，不进入新版本发行。
 

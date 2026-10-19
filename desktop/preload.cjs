@@ -36,8 +36,12 @@ async function invoke(channel, value) {
 
 if (process.isMainFrame !== false) {
   contextBridge.exposeInMainWorld("BankeDesktop", Object.freeze({
-    version: "1.3.3",
+    version: "1.3.4",
     loadState: () => remember(sendSync("banke:load-state")),
+    readTextDrafts: () => sendSync("banke:text-drafts-read"),
+    stageTextDrafts: rows => sendSync("banke:text-drafts-stage", rows),
+    removeTextDraft: id => sendSync("banke:text-drafts-remove", id),
+    onTextDrafts: callback => subscribe("banke:text-drafts-changed", callback, value => value && value.ok ? value : null),
     saveState: (state, baseline = lastSnapshot) => remember(sendSync("banke:save-state", { state, baseline })),
     rendererReady: () => invoke("banke:renderer-ready"),
     openBackup: () => invoke("banke:open-backup"),

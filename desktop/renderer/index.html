@@ -9,6 +9,7 @@
   <title>半刻 · 我的周计划 · Windows 桌面版</title>
   <link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="text-import.css">
 </head>
 <body>
 <!-- banke-app-shell -->
@@ -24,6 +25,7 @@
       <button class="nav-item active" id="navCalendar" aria-current="page"><span class="nav-icon">▦</span> 我的周计划 <span class="nav-count">07</span></button>
       <button class="nav-item" id="navCourses"><span class="nav-icon">▤</span> 课程与安排</button>
       <button class="nav-item" id="navPending"><span class="nav-icon">◷</span> 待核对 <span class="count-pill" id="pendingCount">0</span></button>
+      <button class="nav-item" id="textImportButton"><span class="nav-icon">✎</span> 文本识别导入</button>
     </nav>
     <section class="sidebar-section">
       <h2>显示时间</h2>
@@ -212,6 +214,9 @@
 </dialog>
 <script src="core.js"></script>
 <script src="seed.js"></script>
+<script src="text-import.js"></script>
+<script src="text-import-drafts.js"></script>
+<script src="text-import-ui.js"></script>
 <script src="app.js"></script>
 <script src="sync-ui.js"></script>
 <script src="lotus-ui.js"></script>

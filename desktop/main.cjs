@@ -12,8 +12,9 @@ const { configureRendering, prepareWindowPreferences } = require("./lib/runtime-
 const { createTaskbarAnchor } = require("./lib/taskbar-anchor.cjs");
 const { createSyncService } = require("./lib/sync-service.cjs");
 const { createLotusWindow } = require("./lib/lotus-window.cjs");
+const { createTextDrafts } = require("./lib/text-import-drafts.cjs");
 
-const VERSION = "1.3.3";
+const VERSION = "1.3.4";
 const APP_ID = "org.banke.community.desktop";
 const WINDOW_TITLE = "半刻·我的周计划";
 const MENU_ACTIONS = new Set(["add", "backup", "import", "print", "undo", "help"]);
@@ -171,6 +172,16 @@ function createDesktopApplication(electron, options={}) {
     try{return await handler(w,arg,event);}catch(e){log(name,e);return {ok:false,error:e.message||'操作未完成。'};}
   });}
   function installIpc(){
+    const drafts=createTextDrafts({directory});
+    for(const [channel,operation] of [
+      ['banke:text-drafts-read',()=>drafts.read()],
+      ['banke:text-drafts-stage',rows=>{const current=service.loadDesktopState();if(!current.ok)return current;return drafts.stage(rows,(current.state?.events||[]).map(e=>e.id));}],
+      ['banke:text-drafts-remove',id=>typeof id==='string'&&/^text-[a-zA-Z0-9-]{8,100}$/.test(id)?drafts.remove(id):{ok:false,error:'草稿编号无效。'}]
+    ])ipcMain.on(channel,(event,value)=>{
+      if(!senderWindow(event)){event.returnValue=denied();return;}
+      try{const result=operation(value);event.returnValue=result;if(result.ok&&channel!=='banke:text-drafts-read')sendAll('banke:text-drafts-changed',{ok:true});}
+      catch(error){event.returnValue={ok:false,error:error.message};}
+    });
     ipcMain.on('banke:load-state',event=>{event.returnValue=senderWindow(event)?service.loadDesktopState():denied();});
     ipcMain.on('banke:save-state',(event,request)=>{
       const w=senderWindow(event);if(!w){event.returnValue=denied();return;}

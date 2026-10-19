@@ -17,6 +17,7 @@ __pycache__/
 schedule*.json
 sync-state.json
 lotus-preferences.json
+text-import-drafts.json
 server-info.json
 
 .DS_Store

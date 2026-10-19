@@ -19,6 +19,18 @@
   let mutationQueue = Promise.resolve();
   let statusOperation = false;
   let subscriptionsReady = false;
+  const drafts=window.BankeTextDrafts.createBackend({read:()=>window.localStorage.getItem('banke.text-import.drafts.v1'),write:raw=>window.localStorage.setItem('banke.text-import.drafts.v1',raw)});
+  const textImport=window.BankeTextImportUI.create({
+    getState:()=>{if(!state)throw Error('日程尚未加载，请稍后重试。');return M.clone(state);},today:todayIso,
+    readDrafts:()=>drafts.read(),stageDrafts:rows=>drafts.stage(rows,(state?.events||[]).map(e=>e.id)),removeDraft:id=>drafts.remove(id),
+    async apply(rows,semesterStart){let plan;try{
+      await commit(fresh=>{if(fresh.semesterStart!==semesterStart)throw Error('学期设置已变化，请重新识别。');plan=window.BankeTextImport.prepare(fresh,rows);return plan.state;});
+      return {ok:true,...plan};
+    }catch(e){return {ok:false,error:e.message};}},
+    changed:()=>render(),toast,editEvent:id=>openEvent(id),
+    onOpen:()=>{$('app').inert=true;document.body.classList.add('modal-open');},
+    onClose:()=>{if(!activeSheet){$('app').inert=false;document.body.classList.remove('modal-open');}}
+  });
 
   function node(tag, className, text) {
     const element = document.createElement(tag);
@@ -83,6 +95,7 @@
   function dailyEvents() { return activeEvents().filter(event => event.day === selectedDay).sort((a, b) => a.start - b.start || a.end - b.end || a.title.localeCompare(b.title)); }
   function render() {
     if (!state) return;
+    const pending=drafts.read();$('textPendingCount').textContent=pending.ok?String(pending.items.filter(d=>!state.events.some(e=>e.id===d.id)).length+state.events.filter(e=>e.uncertain).length):'!';
     document.body.dataset.theme = state.theme;
     document.querySelector('meta[name="theme-color"]').content = state.theme === "dark" ? "#1e2722" : "#f6f5f0";
     $("weekSelect").value = String(state.selectedWeek);
@@ -414,6 +427,8 @@
     } catch (error) { toast("同步日程没有通过校验，本机内容保留：" + error.message); }
   }
   function bindUI() {
+    $('textImportButton').onclick=()=>textImport.open().catch(e=>toast(e.message));
+    $('textPendingButton').onclick=()=>textImport.openPending().catch(e=>toast(e.message));
     for (let week = 1; week <= 24; week += 1) { const option = node("option", "", "第 " + week + " 周"); option.value = String(week); $("weekSelect").append(option); }
     dayNames.forEach((name, index) => { const option = node("option", "", name); option.value = String(index + 1); $("eventDay").append(option); });
     for (let minute = 0; minute <= 1440; minute += 30) {
@@ -476,7 +491,7 @@
       try { acceptStatus(await H.getSyncStatus()); } catch (_) { /* A sync failure does not prevent offline editing. */ }
     } catch (error) { $("fatalDetail").textContent = error.message || String(error); $("fatalError").hidden = false; }
   }
-  window.BankeMobileUI = Object.freeze({ back: function () { if (activeSheet) { closeSheet(activeSheet); return true; } return false; } });
+  window.BankeMobileUI = Object.freeze({ back: function () { if(textImport.isOpen()){textImport.close();return true;} if (activeSheet) { closeSheet(activeSheet); return true; } return false; } });
   bindUI(); boot();
   setInterval(() => { if (state && !document.hidden && !activeSheet) renderTimeline(dailyEvents(), C.weekDates(state.semesterStart, state.selectedWeek)[selectedDay - 1] === todayIso()); }, 60000);
 })();
