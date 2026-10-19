@@ -17,3 +17,14 @@ __pycache__/
 schedule*.json
 sync-state.json
 server-info.json
+
+.DS_Store
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.xcresult/
+*.mobileprovision
+*.provisionprofile
+*.p8
+*.ipa
+*.xcarchive/
