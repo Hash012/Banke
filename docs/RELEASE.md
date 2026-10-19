@@ -11,3 +11,4 @@ Windows 安装包和便携包均超过普通 Git 文件限制，只放 Releases 
 APK 继续使用本轮稳定签名。Windows 当前未做发布者签名。Mac/iOS 没有本轮真机验收包，不混入旧 Go 安装包。旧 v1.1.0 是不同实现，保留历史记录但不作为当前下载入口。
 
 README 内嵌同一次真实窗口录制的 GIF，点击打开完整 H.264 MP4；仅缩放补齐画布，未模拟 UI。示例安排不进入初始数据，来源见 media/README.md。
+发布已完成，六个附件均已匿名完整下载核对摘要，Windows/Android CI 通过。见 [发布后核验](PUBLISHED.md)。源码 ZIP 固定对应 v1.3.2 标签；main 的后续核验文档不改发行包。

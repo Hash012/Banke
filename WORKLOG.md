@@ -46,3 +46,13 @@
 - 仅将审核后的 GIF、应用截图与媒体来源说明纳入公开源码，完整 MP4 放 Release。README 用内嵌 GIF 预览链接 MP4，并更新为本轮直接下载地址。原始尝试、录制脚本和运行数据仍仅 .local 保存。
 - 发布顺序：最终源码/附件审计与校验 → 提交及标签推送 → 草稿完整上传并核对摘要 → 公开发布 → 不带凭据重新下载核验。公开结果以实际 GitHub 页面为准，不以计划文字代替。
 - 暂存检查将原生 CRLF 的 CR 误报为行尾空白；增加 .gitattributes 明确保留已核验源文件字节并允许 CRLF，仍检查实际行尾空格/文件尾空行。只移除一处测试文件末尾多余空行；应用源码和已测 ASAR 不变。
+
+## 公开发布完成
+
+- git commit 创建 cdaabc6；git push --atomic origin main refs/tags/v1.3.2 成功，未覆盖远端提交或改写已有标签。
+- GitHub Actions 39259904664 的 Windows、Android 两项均 success，公开源码在远端实际构建通过。
+- 本机发布辅助脚本执行 upload，六个附件均收到与本机一致的服务器 digest；确认完整后才 publish。期间修正辅助脚本从 stdin 执行时的目录解析，以及草稿更新说明后观察到 tag_name 变成 untagged 的元数据问题；校验拦截后，使用固定 Release ID 和显式完整字段恢复原有 v1.3.2 标签发布。未发布错误标签、未改应用包、未改写 Git 标签，历史 v1.1.0 未改动。
+- 最终 Release ID 417321329，tag_name v1.3.2，draft false，Latest 为本版。执行 verify-public，完全不带凭据重新下载安装器、完整 ZIP、APK、源码 ZIP、MP4 和校验清单，六项 SHA-256 全部与本机一致。
+- 公开 README 的 HTML 确有内嵌真实 GIF 与完整 MP4 链接；公开图片/README 原文与本机审阅版本一致。MP4 的 84 帧均解码通过；GIF 优化合并静止帧后 15 帧、仍为 16.8 秒，未将帧合并误记为画面遗漏。
+- 录制用的两个独立演示进程均已通过界面正常退出，未结束其他进程。所有本地原始运行数据、发布凭据和签名保持未上传。
+- 发布后只补交文档验收结果，使用 [skip ci] 避免对未改应用重复构建；v1.3.2 标签及已验证附件保持原字节。完整公开结果记录在 docs/PUBLISHED.md，本地逐项下载凭据仅留 .local/release-public-verification.json（不含认证信息）。
