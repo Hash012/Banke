@@ -1,0 +1,84 @@
+{
+  "name": "banke-community",
+  "version": "1.3.2",
+  "description": "Banke weekly planner, blank community edition",
+  "productName": "Banke Community",
+  "author": "Banke contributors",
+  "license": "MIT",
+  "private": true,
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test desktop/tests/*.test.cjs tests/*.test.cjs",
+    "dist:win": "electron-builder --win nsis zip --x64 --publish never",
+    "pack:win": "electron-builder --win --x64 --dir --publish never",
+    "postinstall": "node scripts/install-runtime.cjs"
+  },
+  "dependencies": {
+    "koffi": "3.3.3"
+  },
+  "devDependencies": {
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "org.banke.community.desktop",
+    "productName": "Banke Community",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "desktop/main.cjs",
+      "desktop/preload.cjs",
+      "desktop/lib/**",
+      "desktop/renderer/**",
+      "desktop/assets/**",
+      "package.json",
+      "LICENSE"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/koffi/**",
+      "node_modules/@koromix/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "desktop/assets/icon.ico",
+      "executableName": "BankeCommunity",
+      "signAndEditExecutable": true,
+      "artifactName": "Banke-Community-${version}-Windows-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": false,
+      "shortcutName": "Banke Community",
+      "uninstallDisplayName": "Banke Community",
+      "artifactName": "Banke-Community-Setup-${version}-${arch}.${ext}"
+    },
+    "mac": {
+      "target": [
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "identity": null
+    },
+    "electronDist": "node_modules/electron/dist"
+  }
+}

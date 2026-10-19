@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f5f0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>半刻 · 周计划</title>
+  <link rel="stylesheet" href="app.css">
+  <script defer src="core.js"></script>
+  <script defer src="seed.js"></script>
+  <script defer src="mobile-model.js"></script>
+  <script defer src="sync-core.js"></script>
+  <script defer src="adapter.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main id="app" aria-busy="true">
+    <header class="app-header">
+      <div class="brand-row">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">半</span><span>半刻<span class="brand-sub">把时间留给重要的事</span></span></div>
+        <button class="icon-button" id="openSettings" type="button" aria-label="日程设置"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg></button>
+      </div>
+      <div class="week-row">
+        <div class="week-choice"><button class="icon-button" id="prevWeek" type="button" aria-label="上一周">‹</button><label class="week-select-label"><span class="sr-only">教学周</span><select id="weekSelect"></select></label><button class="icon-button" id="nextWeek" type="button" aria-label="下一周">›</button></div>
+        <button class="text-button" id="goToday" type="button">回到今天</button>
+      </div>
+      <nav class="day-strip" id="dayStrip" aria-label="选择星期"></nav>
+    </header>
+
+    <section id="scheduleView" class="schedule-view" aria-label="日程">
+      <div class="day-intro"><div><p class="eyebrow" id="dateCaption"></p><h1 id="dayTitle">我的日程</h1></div><button class="sync-pill" id="openSync" type="button"><span class="status-dot" id="headerStatusDot"></span><span id="headerSyncText">本机保存</span></button></div>
+      <div class="day-meta"><span id="daySummary"></span><div class="segmented" aria-label="显示方式"><button id="timelineTab" class="active" type="button" aria-pressed="true">时间轴</button><button id="listTab" type="button" aria-pressed="false">列表</button></div></div>
+      <button type="button" id="outsideRange" class="info-banner" hidden></button>
+      <p id="conflictNotice" class="conflict-notice" hidden></p>
+      <div id="timelinePanel"><div class="timeline-range"><span id="rangeCaption"></span><span>每格 30 分钟 · 点空白添加</span></div><div id="timeline" class="timeline" aria-label="半小时日程表"></div></div>
+      <div id="listPanel" class="agenda-list" hidden></div>
+      <p class="schedule-footer" id="scheduleFooter">更改会先保存在手机，连接电脑后自动同步。</p>
+    </section>
+
+    <nav class="bottom-bar" aria-label="主要操作"><button type="button" class="bottom-item active" id="scheduleNav"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4m8-4v4M4 11h16m-11 4h2m3 0h2m-7 3h2"/></svg><span>日程</span></button><button type="button" id="addEvent" class="add-button"><span aria-hidden="true">＋</span>新增安排</button><button type="button" class="bottom-item" id="syncNav"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8a8 8 0 0 0-13-2L3 9m0-5v5h5M5 16a8 8 0 0 0 13 2l3-3m0 5v-5h-5"/></svg><span>电脑同步</span></button></nav>
+  </main>
+
+  <section class="sheet-layer" id="eventSheet" hidden>
+    <div class="sheet-backdrop" data-close="eventSheet"></div>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="eventHeading">
+      <div class="sheet-handle" aria-hidden="true"></div><header class="sheet-header"><div><p class="eyebrow" id="eventSubheading">第 7 周</p><h2 id="eventHeading">新增安排</h2></div><button type="button" class="icon-button close-button" data-close="eventSheet" aria-label="关闭编辑">×</button></header>
+      <form id="eventForm" class="sheet-form" novalidate>
+        <p class="form-error" id="eventError" role="alert" hidden></p>
+        <p class="info-banner" id="eventRemoteNotice" hidden>电脑端已有新的更改。保存时会检查这条安排，避免覆盖新内容。</p>
+        <label>安排名称<input id="eventTitle" type="text" maxlength="200" placeholder="想在这段时间做什么？" autocomplete="off" required></label>
+        <div class="form-row"><label>星期<select id="eventDay"></select></label><label>分类<select id="eventCategory"><option value="course">课程</option><option value="study">学习</option><option value="life">生活</option><option value="rest">休息</option></select></label></div>
+        <div class="form-row"><label>开始时间<input id="eventStart" type="text" inputmode="text" placeholder="16:00" maxlength="5" required></label><label>结束时间<input id="eventEnd" type="text" inputmode="text" placeholder="24:00" maxlength="5" required></label></div>
+        <p class="field-note">可填精确分钟，例如 18:40；当天结束可填 24:00。</p>
+        <label id="scopeLabel" hidden>本次修改范围<select id="eventScope"><option value="this">仅当前教学周</option><option value="all">全部适用周次</option></select></label>
+        <label>适用周次<input id="eventWeeks" type="text" inputmode="text" maxlength="500" placeholder="例如 1-4,6-16" required></label>
+        <label>地点<input id="eventLocation" type="text" maxlength="200" placeholder="教室、图书馆或线上" autocomplete="off"></label>
+        <label>备注<textarea id="eventNotes" rows="3" maxlength="3000" placeholder="要准备的材料、待办或提醒…"></textarea></label>
+        <label class="check-row"><input id="eventUncertain" type="checkbox"><span>信息待核对</span></label>
+        <p class="conflict-hint" id="eventConflicts" hidden></p>
+        <div class="edit-utilities"><button type="button" id="completeEvent" class="secondary-button">标记本周完成</button><button type="button" id="deleteEvent" class="danger-text">删除安排</button></div>
+        <div id="deleteConfirm" class="confirm-box" hidden><p id="deleteQuestion"></p><div><button type="button" class="text-button" id="cancelDelete">保留</button><button type="button" class="danger-button" id="confirmDelete">确认删除</button></div></div>
+        <div class="sheet-actions"><button type="button" class="secondary-button" data-close="eventSheet">取消</button><button type="submit" class="primary-button" id="saveEvent">保存安排</button></div>
+      </form>
+    </section>
+  </section>
+
+  <section class="sheet-layer" id="syncSheet" hidden>
+    <div class="sheet-backdrop" data-close="syncSheet"></div><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="syncHeading">
+      <div class="sheet-handle" aria-hidden="true"></div><header class="sheet-header"><div><p class="eyebrow">手机与电脑 · 同一 Wi-Fi</p><h2 id="syncHeading">自动同步</h2></div><button type="button" class="icon-button close-button" data-close="syncSheet" aria-label="关闭同步设置">×</button></header>
+      <div class="sheet-form">
+        <div class="sync-status-card"><div class="sync-symbol" aria-hidden="true">⇄</div><div><strong id="syncStatusTitle">手机独立使用中</strong><p id="syncStatusDetail">配对后，手机和电脑上的修改会自动同步。</p></div></div>
+        <p class="form-error" id="syncError" role="alert" hidden></p>
+        <div id="pairedDetails" hidden><dl class="sync-details"><div><dt>电脑</dt><dd id="pairedComputer">—</dd></div><div><dt>上次同步</dt><dd id="lastSynced">尚未同步</dd></div><div><dt>待同步更改</dt><dd id="pendingChanges">无</dd></div></dl><button class="primary-button full-width" type="button" id="syncNow">立即同步</button><details class="address-details" id="addressDetails"><summary>电脑地址改变了？</summary><form id="updateAddressForm" novalidate><label>这台电脑的新地址<input id="updatedAddress" type="url" maxlength="300" placeholder="http://192.168.1.5:47831" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="url"></label><p class="field-note">填写同一台电脑现在显示的地址。现有配对和未同步的编辑会保留。</p><button type="submit" class="secondary-button full-width" id="updateAddressButton">更新电脑地址</button></form></details><button class="text-button full-width" type="button" id="unpair">断开这台电脑</button></div>
+        <form id="pairForm" novalidate><ol class="pair-steps"><li>电脑端打开半刻，在“手机同步”中开启同步。</li><li>让手机与电脑连接同一个 Wi-Fi，在下方填写电脑显示的地址。</li></ol><label>电脑地址<input id="pairAddress" type="url" maxlength="300" placeholder="http://192.168.1.5:47831" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="url"></label><button type="submit" class="primary-button full-width" id="pairButton">连接电脑</button></form>
+        <div id="pairingVerification" class="pairing-verification" hidden><p class="eyebrow">请核对两端数字</p><strong id="pairSas" class="pair-sas"></strong><p>确认电脑与手机上显示的 <strong>8 位数字完全一致</strong>，再在电脑端点击“允许连接”。</p><p class="field-note">等待电脑批准时还没有开始同步。</p><button type="button" class="text-button full-width" id="cancelPairing">取消本次配对</button></div>
+        <div id="unpairConfirm" class="confirm-box" hidden><p>断开后保留手机上的日程，暂停与这台电脑同步。</p><div><button type="button" class="text-button" id="cancelUnpair">取消</button><button type="button" class="danger-button" id="confirmUnpair">确认断开</button></div></div>
+        <div class="sync-explainer"><h3>离线也能继续安排</h3><p>更改先保存在手机。配对后，两台设备在同一 Wi-Fi 且电脑端半刻运行时，会自动交换更改。</p><p>手机进入后台后，同步可能受系统省电限制；重新打开半刻时会继续同步。电脑关机或离开 Wi-Fi 时，日程仍然可以查看和编辑。</p></div>
+      </div>
+    </section>
+  </section>
+
+  <section class="sheet-layer" id="settingsSheet" hidden>
+    <div class="sheet-backdrop" data-close="settingsSheet"></div><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsHeading"><div class="sheet-handle" aria-hidden="true"></div><header class="sheet-header"><div><p class="eyebrow">按你的习惯安排</p><h2 id="settingsHeading">日程设置</h2></div><button type="button" class="icon-button close-button" data-close="settingsSheet" aria-label="关闭日程设置">×</button></header><form id="settingsForm" class="sheet-form" novalidate><p class="form-error" id="settingsError" role="alert" hidden></p><label>第 1 教学周的周一<input id="semesterStart" type="date" required></label><div class="form-row"><label>显示开始<select id="settingRangeStart"></select></label><label>显示结束<select id="settingRangeEnd"></select></label></div><p class="field-note">只调整时间轴的显示范围，范围外的日程仍保留，可在列表中查看。</p><label>外观<select id="settingTheme"><option value="light">浅色</option><option value="dark">深色</option></select></label><div class="about-card"><span class="brand-mark" aria-hidden="true">半</span><div><strong>半刻 · 手机版</strong><p>周一至周日，留出每一段半小时。</p></div></div><div class="sheet-actions"><button type="button" class="secondary-button" data-close="settingsSheet">取消</button><button type="submit" class="primary-button">保存设置</button></div></form></section>
+  </section>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <section id="fatalError" class="fatal-error" hidden><h1>暂时无法读取日程</h1><p id="fatalDetail"></p><button id="retryLoad" type="button" class="primary-button">重新读取</button></section>
+</body>
+</html>

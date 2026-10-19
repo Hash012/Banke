@@ -1,0 +1,57 @@
+name: Build public community candidates
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - run: npm test
+      - run: python scripts/audit_public.py
+      - run: npm run dist:win
+      - run: node scripts/verify_desktop.cjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: windows-community-candidate
+          path: |
+            dist/Banke-Community-Setup-*.exe
+            dist/Banke-Community-*-Windows-*.zip
+          if-no-files-found: error
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - run: |
+          python -m pip install cryptography
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Compile and verify Java with a disposable CI-only signing identity
+        run: |
+          python scripts/build_android.py --sdk "$ANDROID_HOME" --key .local/ci-signing/key.pk8 --cert .local/ci-signing/cert.pem --generate-key --out dist/Banke-Community-CI-test-only.apk
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: android-ci-test-only-not-an-upgrade
+          path: dist/Banke-Community-CI-test-only.apk
+          if-no-files-found: error
+# No automatic Release and no private signing key upload. Maintainer release
+# artifacts are built locally with the stable identity and tested on devices.

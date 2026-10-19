@@ -1,0 +1,2 @@
+# Preserve verified source bytes; recognize native Windows CRLF during whitespace checks.
+* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

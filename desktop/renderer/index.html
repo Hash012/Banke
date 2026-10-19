@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d766e">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+  <meta name="description" content="半刻：可编辑的周一至周日日程。半小时网格，准确到分钟的课程，可编辑、自动保存、备份与桌面安装。">
+  <title>半刻 · 我的周计划 · Windows 桌面版</title>
+  <link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- banke-app-shell -->
+<a class="skip-link" href="#calendarPanel">跳到日程表</a>
+<div class="app-shell">
+  <aside class="sidebar no-print">
+    <a class="brand" href="#" aria-label="半刻，我的周计划">
+      <svg class="brand-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="12" fill="currentColor"/><rect x="10" y="10" width="8" height="8" rx="2" fill="white"/><rect x="22" y="10" width="8" height="8" rx="2" fill="white" opacity=".45"/><rect x="10" y="22" width="8" height="8" rx="2" fill="white" opacity=".45"/><path d="M22 22h8v8h-8z" fill="white"/></svg>
+      <span><strong>半刻</strong><small>把时间，留给自己</small></span>
+    </a>
+    <div class="workspace-label">我的空间 <span>桌面版</span></div>
+    <nav class="main-nav" aria-label="主导航">
+      <button class="nav-item active" id="navCalendar" aria-current="page"><span class="nav-icon">▦</span> 我的周计划 <span class="nav-count">07</span></button>
+      <button class="nav-item" id="navCourses"><span class="nav-icon">▤</span> 课程与安排</button>
+      <button class="nav-item" id="navPending"><span class="nav-icon">◷</span> 待核对 <span class="count-pill" id="pendingCount">0</span></button>
+    </nav>
+    <section class="sidebar-section">
+      <h2>显示时间</h2>
+      <label class="sr-only" for="rangePreset">选择显示时间范围</label>
+      <select id="rangePreset" class="range-select">
+        <option value="960,1440">晚间 · 16:00–24:00</option>
+        <option value="240,1440">全天 · 04:00–24:00</option>
+        <option value="240,720">上午 · 04:00–12:00</option>
+        <option value="custom">自定义时间…</option>
+      </select>
+      <p class="caption">每格 30 分钟 · 周一至周日</p>
+    </section>
+    <section class="sidebar-section legend">
+      <h2>安排类型</h2>
+      <div><span class="dot course"></span>课程<span>来自你的课表</span></div>
+      <div><span class="dot study"></span>学习<span>专注与复习</span></div>
+      <div><span class="dot life"></span>生活<span>运动与日常</span></div>
+      <div><span class="dot rest"></span>休息<span>也值得被安排</span></div>
+    </section>
+    <div class="sidebar-bottom">
+      <div class="desktop-card">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="24" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 27h10M16 22v5m-4-13 3 3 5-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <strong>专属于你的桌面日程</strong>
+        <p>独立运行，本机文件自动保存。</p>
+        <button id="desktopButton" class="text-button">桌面使用说明 <span>↗</span></button>
+      </div>
+      <div class="local-note"><span class="dot tiny"></span> 已启用本机文件保存</div>
+    </div>
+  </aside>
+  <main class="main-content">
+    <header class="topbar titlebar no-print">
+      <div class="breadcrumb">我的空间 <span>/</span> <strong id="breadcrumbPage">周计划</strong></div>
+      <div class="top-actions">
+        <span id="saveStatus" class="save-status" role="status"><span class="dot tiny"></span>已保存到本机文件</span>
+        <button id="undoButton" class="icon-button" title="撤销上一次编辑（Ctrl / ⌘ Z）" aria-label="撤销上一次编辑" disabled>↶</button>
+        <button id="settingsButton" class="icon-button" title="日程设置" aria-label="日程设置"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="var(--surface)"/><circle cx="16" cy="17" r="3" fill="var(--surface)"/></svg></button>
+        <button id="syncButton" class="icon-button" title="手机自动同步" aria-label="手机自动同步" type="button">⇄</button>
+        <button id="desktopModeButton" class="button desktop-mode-button" type="button">固定到桌面</button>
+        <button id="desktopOptionsButton" class="icon-button desktop-options-button" type="button" title="桌面模式设置" aria-label="桌面模式设置">⋯</button>
+        <button id="desktopQuitButton" class="button desktop-quit-button" type="button" hidden>退出软件</button>
+        <div class="window-controls" id="windowControls" aria-label="窗口控制">
+          <button id="minimizeWindow" class="window-control" type="button" title="最小化" aria-label="最小化窗口">—</button>
+          <button id="maximizeWindow" class="window-control" type="button" title="最大化或还原" aria-label="最大化或还原窗口">□</button>
+          <button id="closeWindow" class="window-control window-close" type="button" title="关闭半刻" aria-label="关闭半刻">×</button>
+        </div>
+      </div>
+    </header>
+    <div class="page-content">
+      <section class="page-heading">
+        <div><p class="eyebrow">A LITTLE SPACE FOR YOURSELF</p><h1 id="pageTitle">我的一周<span class="title-dot">.</span></h1><p class="page-subtitle" id="pageSubtitle">课程先安放好，其余时间由你来写。</p></div>
+        <div class="heading-actions no-print">
+          <details class="export-menu" id="exportMenu"><summary class="button secondary"><span>↗</span> 备份与导出</summary><div class="menu-popover">
+            <button id="exportJson">导出完整备份 · JSON</button>
+            <button id="importJson">导入备份</button>
+            <button id="exportCsv">导出当前时间表 · CSV</button>
+            <button id="printButton">打印 / 另存为 PDF</button>
+            <button id="downloadOffline">打开日程数据文件夹</button>
+            <button id="exportDamaged" hidden>导出无法读取的原数据</button>
+          </div></details>
+          <button class="button primary" id="addButton"><span class="plus">＋</span> 添加安排</button>
+        </div>
+      </section>
+      <div id="storageWarning" class="notice danger no-print" hidden></div>
+      <div id="desktopNotice" class="notice amber desktop-notice no-print" role="status" hidden></div>
+      <section class="metrics" aria-label="当前时间范围统计">
+        <div class="metric"><div class="metric-icon mint">▤</div><div><span>课程时间</span><strong id="courseHours">—</strong></div><small>当前周 · 显示范围内</small></div>
+        <div class="metric"><div class="metric-icon peach">◷</div><div><span>已安排</span><strong id="plannedHours">—</strong></div><small>含课程，重叠只计一次</small></div>
+        <div class="metric"><div class="metric-icon lavender">◇</div><div><span>可安排</span><strong id="freeHours">—</strong></div><small id="freeDescription">留给你的自由时间</small></div>
+      </section>
+      <button class="audit-banner no-print" id="auditBanner"><span class="audit-icon">!</span><span id="auditBannerText">2 条课程的时间需要核对</span><span class="audit-link">查看详情 →</span></button>
+      <section class="calendar-panel" id="calendarPanel" aria-label="周一至周日日程表">
+        <div class="calendar-toolbar">
+          <div class="week-picker"><button class="icon-button no-print" id="prevWeek" aria-label="上一教学周">‹</button><div><label class="sr-only" for="weekSelect">教学周</label><select id="weekSelect"></select><span id="weekDates"></span></div><button class="icon-button no-print" id="nextWeek" aria-label="下一教学周">›</button><button class="small-button no-print" id="thisWeek">本周</button></div>
+          <div class="view-detail"><span id="rangeLabel">16:00–24:00</span><span class="separator"></span><span>30 分钟</span><button id="mobileRange" class="small-button mobile-only no-print">时间范围</button></div>
+        </div>
+        <div id="conflictBanner" class="conflict-banner no-print" hidden></div>
+        <div class="calendar-scroll" id="calendarScroll"><div id="calendarGrid" class="calendar-grid"></div></div>
+        <div class="calendar-footer"><span><i class="dot tiny"></i>点击空白格添加 · 点击卡片编辑</span><span id="hiddenCount"></span></div>
+      </section>
+      <section id="coursesPanel" class="courses-panel" hidden>
+        <div class="list-toolbar"><div><h2>课程与个人安排</h2><p>所有周次都保留在这里，点击任意记录即可修改。</p></div><label class="toggle-label"><input type="checkbox" id="listAllWeeks" checked> 学期全部周次</label></div>
+        <div id="courseList"></div>
+      </section>
+      <section id="pendingPanel" class="pending-panel" hidden></section>
+      <footer class="page-footer"><span>半小时一格，给每件事一点位置。</span><span>半刻 · 个人周计划</span></footer>
+    </div>
+  </main>
+</div>
+<dialog id="eventDialog" class="modal event-modal" aria-labelledby="eventDialogTitle">
+  <form id="eventForm">
+    <div class="modal-header"><div><p class="eyebrow">YOUR NEXT HALF HOUR</p><h2 id="eventDialogTitle">添加安排</h2></div><button type="button" class="icon-button close-dialog" aria-label="关闭">×</button></div>
+    <div class="modal-body">
+      <div id="pendingHint" class="notice" hidden>这门课在图片中的时间无法准确辨认，请填写确认过的起止时间和教学周。</div>
+      <label class="field">安排名称<input id="eventTitle" name="title" maxlength="120" placeholder="例如：数据库复习、跑步、晚餐" required autocomplete="off"></label>
+      <div class="form-row"><label class="field">安排类型<select id="eventCategory"><option value="course">课程</option><option value="study">学习</option><option value="life">生活</option><option value="rest">休息</option></select></label><label class="field">星期<select id="eventDay"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="7">周日</option></select></label></div>
+      <div class="form-row"><label class="field">开始时间<input id="eventStart" type="text" inputmode="numeric" placeholder="16:00" pattern="[0-2]?[0-9]:[0-5][0-9]" required autocomplete="off"></label><label class="field">结束时间<input id="eventEnd" type="text" inputmode="numeric" placeholder="16:30 或 24:00" pattern="[0-2]?[0-9]:[0-5][0-9]" required autocomplete="off"></label></div>
+      <p class="field-help">使用 24 小时制。可填写 19:40 等实际分钟；跨午夜请拆成两条安排。</p>
+      <label class="field">地点<input id="eventLocation" maxlength="160" placeholder="教室、图书馆，或留空" autocomplete="off"></label>
+      <div id="editScopeRow"><label class="field">修改范围<select id="editScope"><option value="all">所有列出的教学周</option><option value="this">仅当前教学周</option></select></label></div>
+      <label class="field">重复教学周<input id="eventWeeks" maxlength="150" placeholder="例如：1-4,6-16" required autocomplete="off"></label>
+      <div class="week-presets"><button type="button" id="onlyThisWeek">仅本周</button><button type="button" id="allSemester">第 1–16 周</button><span>支持 1-4,6-16；最多第 24 周</span></div>
+      <label class="field">备注<textarea id="eventNotes" maxlength="3000" rows="3" placeholder="课程说明、复习目标，或其他提醒"></textarea></label>
+      <label class="checkbox-label"><input type="checkbox" id="eventUncertain"> 这条安排还有信息待核对</label>
+      <div id="formConflict" class="notice amber" hidden></div>
+      <p id="eventError" class="form-error" role="alert" hidden></p>
+    </div>
+    <div class="modal-footer"><div class="left-actions"><button type="button" id="deleteEvent" class="text-button danger-text" hidden>删除</button><button type="button" id="completeEvent" class="text-button" hidden>标记本周完成</button></div><div><button type="button" class="button secondary close-dialog">取消</button><button type="submit" class="button primary">保存安排</button></div></div>
+  </form>
+</dialog>
+<dialog id="settingsDialog" class="modal small-modal" aria-labelledby="settingsTitle">
+  <form id="settingsForm"><div class="modal-header"><h2 id="settingsTitle">日程设置</h2><button type="button" class="icon-button close-dialog" aria-label="关闭">×</button></div><div class="modal-body">
+    <label class="field">第 1 教学周的周一<input id="semesterStart" type="date" required></label><p class="field-help">初始设置沿用你的备份：2026/09/07。可按校历修改。</p>
+    <div class="form-row"><label class="field">网格开始时间<select id="settingRangeStart"></select></label><label class="field">网格结束时间<select id="settingRangeEnd"></select></label></div>
+    <p class="field-help">网格始终为半小时一格。更改显示范围会保留范围外的课程与安排。</p>
+    <div class="notice">日程自动保存到本机文件，关闭软件后仍会保留。可以通过 JSON 备份迁移到另一台电脑，也可以导入原网页版的备份。</div>
+    <p id="settingsError" class="form-error" role="alert" hidden></p>
+  </div><div class="modal-footer"><span></span><div><button type="button" class="button secondary close-dialog">取消</button><button type="submit" class="button primary">保存设置</button></div></div></form>
+</dialog>
+<dialog id="desktopModeDialog" class="modal small-modal" aria-labelledby="desktopModeTitle">
+  <div class="modal-header"><h2 id="desktopModeTitle">桌面模式</h2><button type="button" class="icon-button close-dialog" aria-label="关闭">×</button></div>
+  <div class="modal-body desktop-help">
+    <p id="desktopStateSummary" class="desktop-state-summary">正在读取窗口状态…</p>
+    <p>固定后，日程展开在屏幕右半边。其他软件可以盖住它；回到 Windows 桌面时，日程仍保持展开。编辑方式与普通窗口相同。</p>
+    <button id="desktopDialogToggle" class="button primary full-width" type="button">固定到桌面右半屏</button>
+    <button id="nextDisplayButton" class="button secondary full-width" type="button" disabled>移到下一块屏幕</button>
+    <p id="desktopDisplayLabel" class="field-help">固定后可选择显示日程的屏幕。</p>
+    <label class="checkbox-label startup-label"><input id="startAtLogin" type="checkbox" disabled> 登录 Windows 时自动启动半刻</label>
+    <p id="startAtLoginHelp" class="field-help">正在读取自动启动设置…</p>
+    <p id="desktopModeError" class="form-error" role="alert" hidden></p>
+  </div>
+  <div class="modal-footer"><button id="desktopDialogQuit" class="text-button danger-text" type="button">退出软件</button><button type="button" class="button primary close-dialog">完成</button></div>
+</dialog>
+<dialog id="desktopDialog" class="modal small-modal" aria-labelledby="desktopTitle">
+  <div class="modal-header"><div><p class="eyebrow">YOUR OWN DESKTOP SPACE</p><h2 id="desktopTitle">半刻 · Windows 桌面版</h2></div><button type="button" class="icon-button close-dialog" aria-label="关闭">×</button></div>
+  <div class="modal-body desktop-help">
+    <div class="install-hero"><svg viewBox="0 0 64 48" aria-hidden="true"><rect x="6" y="3" width="52" height="33" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 44h20M32 36v8M24 19l6 6 12-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><p>独立运行 · 离线可用<br><strong>每一次编辑，保存到本机</strong></p></div>
+    <p id="desktopVersion" class="field-help">版本 1.3.1 · Windows 桌面版</p>
+    <h3>在桌面右半屏保持展开</h3><p>点击窗口顶部“固定到桌面”。日程会收起侧栏，在右半屏完整显示周一至周日。其他软件可以盖住它；回到桌面时仍保持展开。顶部“返回普通窗口”可恢复普通窗口，“退出软件”可关闭半刻。通过旁边的“桌面模式设置”可换一块屏幕或开启登录 Windows 自动启动。</p>
+    <h3>固定到 Windows 任务栏</h3><p>先点击顶部“返回普通窗口”，再在底部任务栏右键点击“半刻”的图标，选择“固定到任务栏”。以后点击该图标即可打开普通编辑窗口；编辑后可再次固定到桌面。也可以从开始菜单找到“半刻周计划”。桌面模式下，右下角系统托盘仍保留半刻入口。</p>
+    <h3>数据保存在哪里</h3><p>每次保存安排都会写入本机日程文件。软件也会保留上一份有效数据，方便恢复。卸载软件会保留日程数据。</p><p id="dataDirectory" class="data-directory">%APPDATA%\BankeCommunity</p>
+    <button id="helpDownloadOffline" class="button secondary full-width">打开日程数据文件夹</button>
+    <h3>迁移原来的安排</h3><p>在原来的网页版或 HTML 文件中导出 JSON 备份，再在桌面版“备份与导出”中选择“导入备份”。导入前会请你保存当前数据副本。</p><p>导入或打印时会打开普通窗口，完成后可再次固定到桌面。</p>
+    <div class="notice">此版本自带运行组件，无需安装或启动外部浏览器。所有日程功能可离线使用；跨设备通过 JSON 备份迁移。</div>
+    <details class="source-details"><summary>课表依据与核对说明</summary><p>初始日程完整保留你在 2026/10/19 导出的 29 条安排，包括第 7 周的个人计划、两节 AI 编程和组会；另补入原图明确列出的第 2 周周日 14:00–15:30 数学物理方法课，共 30 条。AI 编程为周三 13:00–14:50、周四 18:40–20:30，组会为周五 16:00–18:30，均第 1–16 周。原有备注按备份保留；课程时间以你编辑后的起止字段为准。时间重叠会并排提示，实际分钟保持不变。</p><p>首次使用打开第 7 周，显示 16:00–24:00；左侧可切换全天，查看上午和下午的安排。升级后继续读取本机已有日程；需要应用这份备份时，请从“备份与导出”导入随软件提供的七天版 JSON。</p></details>
+  </div><div class="modal-footer"><span></span><button class="button primary close-dialog">知道了</button></div>
+</dialog>
+<dialog id="importDialog" class="modal small-modal" aria-labelledby="importTitle"><div class="modal-header"><h2 id="importTitle">导入日程备份</h2><button class="icon-button close-dialog" aria-label="关闭">×</button></div><div class="modal-body"><p id="importSummary"></p><div class="notice">导入会替换当前日程。导入前会自动将当前日程备份到本机 backups 文件夹，可从本机 backups 文件夹恢复导入前的日程。</div></div><div class="modal-footer"><button class="button secondary close-dialog">取消</button><button class="button primary" id="confirmImport">自动备份并导入</button></div></dialog>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+<div id="toast" class="toast" role="status" hidden></div>
+<dialog id="syncDialog" class="modal small-modal" aria-labelledby="syncTitle">
+  <div class="modal-header"><h2 id="syncTitle">手机自动同步</h2><button class="icon-button close-dialog" aria-label="关闭">×</button></div>
+  <div class="modal-body sync-body">
+    <p>电脑与手机连接同一 Wi-Fi，手机打开半刻后，安排和完成标记会自动双向同步。离线编辑会先保存在各自设备。</p>
+    <p id="syncSummary" class="notice" role="status">正在读取同步状态…</p>
+    <button id="syncEnable" class="button primary full-width" type="button">开启局域网同步</button>
+    <section id="syncConnection" hidden>
+      <div id="syncPending"></div>
+      <h3>1 · 在手机中填写电脑地址</h3><div id="syncAddresses"></div>
+      <p class="caption">请选择与你手机连接的 Wi-Fi 对应的地址。Windows 若询问网络访问，请仅允许家庭或学校的专用网络。</p>
+      <h3>2 · 开始配对，再核对两端数字</h3>
+      <button id="syncPair" class="button" type="button">允许新手机配对 · 2 分钟</button>
+      <p id="syncPairWindow" class="caption"></p>
+      <h3>已配对的手机</h3><div id="syncDevices"></div>
+      <p class="caption">手机和电脑可以查看不同的教学周。当前周、显示范围与主题分别保留在各自设备。</p>
+    </section>
+    <p id="syncError" class="form-error" role="alert" hidden></p>
+  </div>
+  <div class="modal-footer"><button class="button primary close-dialog" type="button">完成</button></div>
+</dialog>
+<script src="core.js"></script>
+<script src="seed.js"></script>
+<script src="app.js"></script>
+<script src="sync-ui.js"></script>
+</body>
+</html>

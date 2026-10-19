@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "semesterStart": "2030-01-07",
+  "selectedWeek": 1,
+  "rangeStart": 960,
+  "rangeEnd": 1440,
+  "events": [
+    {
+      "id": "synthetic-sunday",
+      "title": "Synthetic schedule",
+      "day": 7,
+      "start": 1180,
+      "end": 1230,
+      "category": "study",
+      "location": "",
+      "notes": "Generated test data",
+      "weeks": [
+        1
+      ],
+      "uncertain": false
+    }
+  ],
+  "completed": [],
+  "theme": "light"
+}

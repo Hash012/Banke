@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="半刻周计划">
+  <rect width="512" height="512" fill="#0d766e"/>
+  <rect x="114" y="112" width="284" height="292" rx="40" fill="#f4fbf8"/>
+  <path d="M178 106v32m156-32v32" stroke="#c5eae2" stroke-width="22" stroke-linecap="round"/>
+  <path d="M144 181h224" stroke="#d3e9e3" stroke-width="8" stroke-linecap="round"/>
+  <rect x="148" y="208" width="88" height="60" rx="13" fill="#0d766e"/>
+  <rect x="254" y="208" width="88" height="60" rx="13" fill="#c5eae2"/>
+  <rect x="148" y="287" width="88" height="60" rx="13" fill="#c5eae2"/>
+  <rect x="254" y="287" width="88" height="60" rx="13" fill="#dbeee8"/>
+  <circle cx="344" cy="352" r="66" fill="#f2c56f"/>
+  <path d="M344 317v35l24 14" fill="none" stroke="#165d55" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
