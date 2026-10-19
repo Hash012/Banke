@@ -644,7 +644,7 @@
   }
   async function openDesktop(){
     openDialog($('desktopDialog'));
-    try{const info=await D.getInfo();$('desktopVersion').textContent='版本 '+(info.version || D.version || '1.3.2')+(info.platform==='darwin'?' · macOS 桌面版':' · Windows 桌面版');$('dataDirectory').textContent=info.dataPath || '本机应用数据目录';}
+    try{const info=await D.getInfo();$('desktopVersion').textContent='版本 '+(info.version || D.version || '1.3.3')+(info.platform==='darwin'?' · macOS 桌面版':' · Windows 桌面版');$('dataDirectory').textContent=info.dataPath || '本机应用数据目录';}
     catch(_){$('desktopVersion').textContent='Windows 桌面版';}
   }
   function setWeek(week) {

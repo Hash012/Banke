@@ -1,2 +1,2 @@
 a863ab832ebbca0ebd1f640967c25b02bde54cf96c57e4686fb4138332ebea9c  Banke-Android.apk
-e63937d91fc40bade5e849b6e6375ceb368320b9e56fd7c3a94aee1d410b4c30  Banke-Source.zip
+29bdb358132a55fa43a2154716db70177f24f4f2c7ff2e5262501d1ced4aaf43  Banke-Source.zip

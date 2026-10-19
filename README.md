@@ -1,10 +1,20 @@
 # 半刻 Banke · 把日子安排得刚刚好
 
-**1.3.2 通用版 · 与已验收正式版相同的 UI 和功能 · 默认空白日程 · MIT**
+**Windows 1.3.3 · 莲花桌宠与日程提醒 · Android 1.3.2 · 默认空白日程 · MIT**
 
 桌面端保留周计划、课程与安排、待核对、分钟精度、撤销、JSON/CSV/HTML 导出、备份导入、打印、桌面右半屏挂件、返回普通窗口、任务栏/托盘和局域网加密同步。手机版使用同一正式版的手机界面，可先离线编辑，再与电脑配对同步。
 
 通用版只移除了私人初始课表和个性化数据，并分离应用标识、存档、配对与开机启动项。首次打开没有课程，不扫描、不读取、不迁移私人版的数据。
+
+## 莲花桌宠 · 念念相续
+
+Windows 1.3.3 新增禅意莲花桌宠。点击右上角 **❀** 或桌面菜单中的“莲花桌宠与提醒”，勾选开启后保存。开始、结束提醒可分别开关，分别设置提前 **0–1440 分钟**，默认开始前 **5 分钟**、结束前 **1 分钟**；0 表示准时提醒。
+
+莲花可拖动并记住位置，透明区域可点击穿透，也可单独选择是否悬浮在其他窗口上方。提醒按真实日期与适用周次触发，跳过已完成安排，多条提醒逐条确认，退出重开不会重复提醒。设置仅保存在当前电脑版；半刻运行时才提醒。原桌面右半屏日程挂件继续保留。
+
+![Windows 1.3.3 莲花桌宠“念念相续”，真实打包程序内的合成提醒截图](docs/media/lotus-desktop.png)
+
+截图来自本机 Windows 运行实际打包程序，日程为合成记录；不是私人日程。升级前正常退出旧版，再运行完整安装包，已有通用版日程和配对保留。实测方式与未测项目见 [TESTING](docs/TESTING.md)。
 
 ## 真实使用演示
 
@@ -16,19 +26,19 @@
 
 ## 下载与安装
 
-从 [v1.3.2 正式下载页](https://github.com/Hash012/Banke/releases/tag/v1.3.2) 获取完整安装包，或点击下表直接下载。校验与实测边界见 [发布记录](docs/RELEASE.md)。**旧 v1.1.0 Release 是不同界面、不同协议的 Go 预览版，不是此版本；不要混装配对。**
+从 [v1.3.3 正式下载页](https://github.com/Hash012/Banke/releases/tag/v1.3.3) 获取新版 Windows 完整安装包，或点击下表直接下载。本次更新电脑版；Android 继续使用原签名的 1.3.2。校验与实测边界见 [发布记录](docs/RELEASE.md)。**旧 v1.1.0 Release 是不同界面、不同协议的 Go 预览版，不是此版本；不要混装配对。**
 
 | 文件 | 用途 |
 | --- | --- |
-| [Banke-Community-Setup-1.3.2-x64.exe](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Setup-1.3.2-x64.exe) | Windows 10/11 x64 完整离线安装包，内含运行时，不需要浏览器、Node、Python 或 Go；可选择安装目录 |
-| [Banke-Community-1.3.2-Windows-x64.zip](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-1.3.2-Windows-x64.zip) | Windows 完整便携包；完整解压后启动 `BankeCommunity.exe` |
+| [Banke-Community-Setup-1.3.3-x64.exe](https://github.com/Hash012/Banke/releases/download/v1.3.3/Banke-Community-Setup-1.3.3-x64.exe) | Windows 10/11 x64 完整离线安装包，含莲花桌宠；不需要浏览器、Node、Python 或 Go；可选择安装目录 |
+| [Banke-Community-1.3.3-Windows-x64.zip](https://github.com/Hash012/Banke/releases/download/v1.3.3/Banke-Community-1.3.3-Windows-x64.zip) | Windows 完整便携包；完整解压后启动 `BankeCommunity.exe` |
 | [Banke-Community-Android-1.3.2.apk](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Android-1.3.2.apk) | Android 8+、仍兼容 APK 的 HarmonyOS；不是 HarmonyOS NEXT 原生 HAP |
-| [Banke-Source.zip](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Source.zip) | 完整公开源码与构建、测试说明 |
-| [SHA256SUMS.txt](https://github.com/Hash012/Banke/releases/download/v1.3.2/SHA256SUMS.txt) | 成品 SHA-256 校验清单 |
+| [Banke-Source.zip](https://github.com/Hash012/Banke/releases/download/v1.3.3/Banke-Source.zip) | 1.3.3 完整公开源码与构建、测试说明 |
+| [SHA256SUMS.txt](https://github.com/Hash012/Banke/releases/download/v1.3.3/SHA256SUMS.txt) | 1.3.3 Windows 与源码成品 SHA-256 校验清单 |
 
 Windows 包超过 GitHub 普通文件大小上限，应作为 Releases 附件分发；不要提交大 EXE、拆包让用户拼接，或把 Git LFS 指针当成可执行程序。代码仓库直接包含可构建源码。Windows 未配置发布者代码签名。
 
-macOS 与 iPhone 的补充状态见下方 Apple 测试版；Windows/Android 稳定版继续使用上表附件。仓库根目录 `Banke-Source.zip` 保留稳定版源码快照，Apple 源码从独立测试发行下载。
+macOS 与 iPhone 的补充状态见下方 Apple 测试版；其附件仍为 1.3.2 独立预览，尚未包含本次莲花桌宠实机验收。仓库根目录 `Banke-Source.zip` 为 1.3.3 源码快照，Android 签名与 1.3.2 APK 不变。
 
 ## Apple 测试版
 

@@ -16,6 +16,18 @@ npm run dist:win
 
 `dist:win` 生成完整 NSIS 安装器和完整便携 ZIP；安装器是从公开配置新构建的，不再以私人安装包作输入或修改其字节。应用 ID、安装注册、快捷方式、数据和开机启动项均独立。卸载不自动删除 AppData。签名证书不附在仓库内；当前 Windows 包未做发布者代码签名。
 
+## 1.3.3 Windows 发行
+
+```powershell
+npm run dist:win -- --config.directories.output=dist/1.3.3
+node scripts/verify_desktop.cjs dist/1.3.3/win-unpacked/resources/app.asar
+python scripts/package_release.py --desktop-only --out dist/1.3.3
+```
+
+输出完整 NSIS 安装器、完整 ZIP、公开源码和校验清单；不替换旧版附件。完整解压 ZIP 后运行 `BankeCommunity.exe`。构建不包含诊断入口、tests、fixture 或 `.local`。本轮只发行 Windows 1.3.3；Android 保留原签名 APK 1.3.2，不生成同名换签名升级。Apple 已发布附件仍为独立预览。
+
+原生合成测试脚本为 `prepare-lotus-native.cjs`、`verify-lotus-native.cjs`、`test-lotus-input.ps1` 和 `verify-lotus-packaged.cjs`；后者支持第二个参数指定已安装／便携程序绝对路径。运行方式与结果见 TESTING。上轮 1.3.2 Lotus-Preview 成品只作为本机历史，不进入新版本发行。
+
 ## Android
 
 需要 JDK 17/21、Python 3.10+、Google 官方 Android SDK Platform 35 和 Build Tools 35.0.0。设置 ANDROID_HOME，或使用 `--sdk` 指定 SDK 根目录。首次自行创建签名需要 Python cryptography。构建直接编译公开 Java，使用官方 javac、D8、aapt2、zipalign 和 apksigner，不使用不透明 DEX 或私人 APK。

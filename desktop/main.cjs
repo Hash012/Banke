@@ -11,8 +11,9 @@ const { createBackupManager } = require("./lib/backup-manager.cjs");
 const { configureRendering, prepareWindowPreferences } = require("./lib/runtime-compatibility.cjs");
 const { createTaskbarAnchor } = require("./lib/taskbar-anchor.cjs");
 const { createSyncService } = require("./lib/sync-service.cjs");
+const { createLotusWindow } = require("./lib/lotus-window.cjs");
 
-const VERSION = "1.3.2";
+const VERSION = "1.3.3";
 const APP_ID = "org.banke.community.desktop";
 const WINDOW_TITLE = "半刻·我的周计划";
 const MENU_ACTIONS = new Set(["add", "backup", "import", "print", "undo", "help"]);
@@ -86,7 +87,7 @@ function createDesktopApplication(electron, options={}) {
   const platform=options.platform || process.platform;
   configureRendering(app,platform);
   const rendererEntry=path.join(__dirname,'renderer','index.html');
-  let editor=null,widget=null,controller=null,service=null,backup=null,tray=null,anchor=null,quitting=false,fileDialogBusy=false,startupNotice='';
+  let editor=null,widget=null,controller=null,service=null,backup=null,tray=null,anchor=null,lotus=null,quitting=false,fileDialogBusy=false,startupNotice='';
   const windows=new Set(), roles=new WeakMap(), loads=new WeakMap(), retiring=new WeakSet();
   app.setName('BankeCommunity');
   const defaultDirectory=path.join(app.getPath('appData'),'BankeCommunity');
@@ -112,10 +113,13 @@ function createDesktopApplication(electron, options={}) {
     {label:'固定到桌面右半屏',type:'checkbox',checked:s.mode==='desktop',enabled:s.supported,click:item=>controller.setMode(item.checked)},
     {label:'返回普通窗口',click:showEditor},
     {label:'切换显示器',enabled:s.mode==='desktop',click:()=>controller.nextDisplay()},
+    {label:'莲花桌宠与提醒…',click:openLotusSettings},
     {type:'separator'},
     {label:platform==='darwin'?'登录 Mac 时自动启动':'登录 Windows 时自动启动',type:'checkbox',checked:s.startAtLogin,enabled:s.canStartAtLogin,click:item=>controller.setStartAtLogin(item.checked)},
     {type:'separator'},{label:'退出半刻',click:()=>app.quit()}];}
   function retireWidget(w){if(!w)return;retiring.add(w);if(widget===w)widget=null;windows.delete(w);try{if(alive(w))w.destroy();}catch(e){log('retire-widget',e);}}
+  async function openLotusSettings(){const result=await showEditor();if(result.ok)send(editor,'banke:lotus-settings-open',{});return result;}
+  function updateLotus(result){if(result?.ok&&result.state)lotus?.update(result.state);}
   function createWindow(role){
     if(role==='editor'&&alive(editor))return editor;if(role==='desktop'&&alive(widget))return widget;
     const isWidget=role==='desktop';
@@ -171,12 +175,15 @@ function createDesktopApplication(electron, options={}) {
     ipcMain.on('banke:save-state',(event,request)=>{
       const w=senderWindow(event);if(!w){event.returnValue=denied();return;}
       try{const wrapped=request&&typeof request==='object'&&Object.hasOwn(request,'state');const result=service.saveDesktopState(wrapped?request.state:request,wrapped?request.baseline:undefined);event.returnValue=result;
-        if(result.ok&&result.state)sendAll('banke:state-changed',{...result,source:'desktop-window'},w);
+        if(result.ok&&result.state){sendAll('banke:state-changed',{...result,source:'desktop-window'},w);updateLotus(result);}
       }catch(e){log('save-state',e);event.returnValue={ok:false,error:e.message};}
     });
     invoke('banke:renderer-ready',w=>{loads.get(w)?.resolve();return {ok:true};});
     invoke('banke:get-info',w=>({ok:true,version:VERSION,dataPath:directory,platform,role:roles.get(w),startupNotice}));
     invoke('banke:open-data-folder',openFolder);
+    invoke('banke:lotus-status',()=>lotus.status());
+    invoke('banke:lotus-configure',(_w,settings)=>lotus.configure(settings));
+    invoke('banke:lotus-preview',()=>lotus.preview());
     invoke('banke:desktop-status',w=>controller.statusForWindow(w));
     invoke('banke:set-desktop-mode',(_w,enabled)=>controller.setMode(enabled));
     invoke('banke:desktop-next-display',()=>controller.nextDisplay());
@@ -203,7 +210,7 @@ function createDesktopApplication(electron, options={}) {
     });
     invoke('banke:import-backup',(w,token)=>{
       if(typeof token!=='string'||!/^\w{48}$/.test(token))return {ok:false,error:'导入预览编号无效。'};
-      const result=backup.apply(w.webContents.id,token);if(result.ok)sendAll('banke:state-changed',{...result,source:'import'},w);return result;
+      const result=backup.apply(w.webContents.id,token);if(result.ok){sendAll('banke:state-changed',{...result,source:'import'},w);updateLotus(result);}return result;
     });
     invoke('banke:save-file',async(w,request)=>{
       const valid=validateExportRequest(request);if(!valid.ok)return valid;if(fileDialogBusy)return {ok:false,error:'请先完成已打开的文件对话框。'};fileDialogBusy=true;
@@ -223,18 +230,19 @@ function createDesktopApplication(electron, options={}) {
   }
   app.on('second-instance',()=>{showEditor().catch(e=>log('relaunch',e));});
   app.on('activate',()=>{if(platform==='darwin'&&controller)showEditor().catch(e=>log('activate',e));});
-  app.on('before-quit',()=>{quitting=true;controller?.dispose();anchor?.dispose();service?.dispose();if(tray&&!tray.isDestroyed())tray.destroy();});
+  app.on('before-quit',()=>{quitting=true;lotus?.dispose();controller?.dispose();anchor?.dispose();service?.dispose();if(tray&&!tray.isDestroyed())tray.destroy();});
   app.on('window-all-closed',()=>{if(!quitting&&controller?.wantsDesktop())return;app.quit();});
   const ready=app.whenReady().then(async()=>{
     const store=options.store || createStateStore({directory});
     const preferences=options.preferences || createDesktopPreferences({directory});startupNotice=prepareWindowPreferences(directory,preferences,platform);
-    service=options.syncService || createSyncService({directory,store,port:options.syncPort,onState:r=>sendAll('banke:state-changed',r),onStatus:r=>sendAll('banke:sync-status-changed',r)});
+    service=options.syncService || createSyncService({directory,store,port:options.syncPort,onState:r=>{sendAll('banke:state-changed',r);updateLotus(r);},onStatus:r=>sendAll('banke:sync-status-changed',r)});
     backup=createBackupManager({directory,service});
     controller=createWorkspaceController({app,screen,preferences,layer:options.layer || createDesktopLayer({platform,resolveWindow:handle=>Array.from(windows).find(w=>alive(w)&&w.getNativeWindowHandle().equals(handle))}),platform,
       getEditor:()=>editor,makeEditor:()=>createWindow('editor'),getWidget:()=>widget,makeWidget:()=>createWindow('desktop'),
       waitReady:w=>loads.get(w).promise,retireWidget,onStatusChange:statusChanged,timers:options.timers});
     if(platform==='win32')anchor=createTaskbarAnchor({BrowserWindow,app,appId:APP_ID,icon:path.join(__dirname,'assets','icon.ico'),onRestore:showEditor,onQuit:()=>app.quit()});
     installIpc();
+    lotus=createLotusWindow({electron,directory,isTrustedSender,onOpen:showEditor,onSettings:openLotusSettings,log});
     Menu.setApplicationMenu(Menu.buildFromTemplate([
       ...(platform==='darwin'?[{role:'appMenu'}]:[]),
       {label:'文件',submenu:[{label:'添加安排',accelerator:'CmdOrCtrl+N',click:()=>dispatch('add')},{label:'导出备份',click:()=>dispatch('backup')},{label:'导入备份',accelerator:'CmdOrCtrl+O',click:()=>dispatch('import')},{label:'打印',accelerator:'CmdOrCtrl+P',click:()=>dispatch('print')},{label:'打开数据文件夹',click:openFolder},{type:'separator'},{label:'退出半刻',click:()=>app.quit()}]},
@@ -243,9 +251,9 @@ function createDesktopApplication(electron, options={}) {
     ]));
     if(platform==='win32'&&Tray){try{tray=new Tray(path.join(__dirname,'assets','icon.ico'));tray.setToolTip('半刻周计划 '+VERSION);tray.setContextMenu(Menu.buildFromTemplate(desktopMenu()));tray.on('double-click',showEditor);}catch(e){log('tray',e);}}
     if(service.getStatus().enabled)service.start().catch(e=>log('sync-start',e));
-    await controller.initialize();return editor;
+    await controller.initialize();updateLotus(service.loadDesktopState());return editor;
   }).catch(e=>{log('startup',e);dialog.showErrorBox('半刻无法打开','程序启动失败：'+e.message+'\n原日程没有被删除。');return null;});
-  return {ready,getWindow:()=>editor,getWidget:()=>widget,getController:()=>controller,getSyncService:()=>service};
+  return {ready,getWindow:()=>editor,getWidget:()=>widget,getController:()=>controller,getSyncService:()=>service,getLotus:()=>lotus};
 }
 module.exports={VERSION,APP_ID,resolveDataDirectory,isAllowedRendererURL,isTrustedSender,validateExportRequest,createDesktopApplication};
 if(require.main===module)createDesktopApplication(require('electron'));

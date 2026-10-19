@@ -105,3 +105,7 @@ body:has(dialog[open]) .titlebar{-webkit-app-region:no-drag;app-region:no-drag}
 .sync-sas { font: 700 30px ui-monospace,Consolas,monospace; letter-spacing: 3px; padding: 12px 0; color: var(--accent,#0d766e); }
 .sync-device { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 0; }
 .sync-running { color: #0d766e; background: #e0f0e9; }
+.lotus-check { display: flex; align-items: center; gap: 8px; margin: 16px 0; font-size: 14px; }
+.lotus-check input { accent-color: #0d766e; width: 17px; height: 17px; }
+.lotus-reminder-row { display: grid; grid-template-columns: 1fr 140px; align-items: center; gap: 18px; border-bottom: 1px solid var(--line); padding: 6px 0; }
+.lotus-reminder-row .field { margin: 0; }

@@ -7,6 +7,6 @@ for(const f of ['main.cjs','preload.cjs']){const rel=path.join('desktop',f);asse
 for(const dir of ['lib','renderer','assets'])walk(path.join('desktop',dir));
 const entries=asar.listPackage(archive).map(p=>p.replaceAll('\\','/'));
 assert(!entries.some(p=>p.includes('diagnostic')||p.includes('/tests/')||p.includes('/.local/')),'Non-production files in ASAR');
-const meta=JSON.parse(asar.extractFile(archive,'package.json').toString());assert.equal(meta.name,'banke-community');assert.equal(meta.version,'1.3.2');assert.equal(meta.license,'MIT');
+const meta=JSON.parse(asar.extractFile(archive,'package.json').toString());assert.equal(meta.name,'banke-community');assert.equal(meta.version,require('../package.json').version);assert.equal(meta.license,'MIT');
 const ctx={window:{},Date};vm.runInNewContext(asar.extractFile(archive,path.join('desktop','renderer','seed.js')).toString(),ctx);assert.equal(ctx.window.BANKE_SEED.state.events.length,0);
 console.log(JSON.stringify({version:meta.version,packedSourceFilesMatch:checked,blankSeed:true,diagnosticExcluded:true}));

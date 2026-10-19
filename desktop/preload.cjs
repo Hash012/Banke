@@ -36,7 +36,7 @@ async function invoke(channel, value) {
 
 if (process.isMainFrame !== false) {
   contextBridge.exposeInMainWorld("BankeDesktop", Object.freeze({
-    version: "1.3.2",
+    version: "1.3.3",
     loadState: () => remember(sendSync("banke:load-state")),
     saveState: (state, baseline = lastSnapshot) => remember(sendSync("banke:save-state", { state, baseline })),
     rendererReady: () => invoke("banke:renderer-ready"),
@@ -53,6 +53,10 @@ if (process.isMainFrame !== false) {
     saveFile: request => invoke("banke:save-file", request),
     openDataFolder: () => invoke("banke:open-data-folder"),
     getInfo: () => invoke("banke:get-info"),
+    getLotusStatus: () => invoke("banke:lotus-status"),
+    setLotusSettings: settings => invoke("banke:lotus-configure", settings),
+    previewLotus: () => invoke("banke:lotus-preview"),
+    onLotusSettings: callback => subscribe("banke:lotus-settings-open", callback, () => ({})),
     getDesktopStatus: () => invoke("banke:desktop-status"),
     setDesktopMode: enabled => invoke("banke:set-desktop-mode", enabled),
     nextDesktopDisplay: () => invoke("banke:desktop-next-display"),

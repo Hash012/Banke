@@ -34,7 +34,7 @@ test('normal-editor commits are broadcast to the wallpaper renderer, not silentl
 });
 test('foreign and child frames cannot read, import, start sync or control windows',async t=>{
  const f=fixture(t);await f.api.ready;const editor=f.api.getWindow();const child={sender:editor.webContents,senderFrame:{url:editor.webContents.getURL(),parent:editor.webContents.mainFrame}};
- for(const name of ['banke:open-backup','banke:import-backup','banke:sync-enable','banke:set-desktop-mode','banke:get-info'])assert.equal((await f.asyncHandlers.get(name)(child,true)).ok,false,name);
+ for(const name of ['banke:open-backup','banke:import-backup','banke:sync-enable','banke:set-desktop-mode','banke:get-info','banke:lotus-status','banke:lotus-configure','banke:lotus-preview'])assert.equal((await f.asyncHandlers.get(name)(child,true)).ok,false,name);
 });
 
 test('closed callback does not access Electron webContents after native destruction',async t=>{

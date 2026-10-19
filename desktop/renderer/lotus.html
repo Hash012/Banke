@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>半刻 · 莲花桌宠</title><link rel="stylesheet" href="lotus.css"></head>
+<body>
+<main id="pet" aria-label="莲花桌宠">
+  <section id="bubble" class="hit bubble" hidden aria-live="polite" aria-atomic="true">
+    <div class="eyebrow" id="kind">一念 · 将启</div><strong id="title"></strong>
+    <p id="timing"></p><p id="location"></p>
+    <div class="bubble-actions"><button id="open">查看日程</button><button id="dismiss">知道了</button></div>
+  </section>
+  <div class="flower hit" title="拖动莲花可移动位置">
+    <svg viewBox="0 0 240 150" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="jade" x1="120" y1="30" x2="120" y2="140" gradientUnits="userSpaceOnUse"><stop stop-color="#f9eee4"/><stop offset=".48" stop-color="#a3d1bf"/><stop offset="1" stop-color="#33847a"/></linearGradient>
+        <linearGradient id="blush" x1="120" y1="10" x2="120" y2="130" gradientUnits="userSpaceOnUse"><stop stop-color="#fff2e8"/><stop offset=".5" stop-color="#efcfca"/><stop offset="1" stop-color="#78b3a2"/></linearGradient>
+        <radialGradient id="glow"><stop stop-color="#b8d9c4" stop-opacity=".5"/><stop offset="1" stop-color="#b8d9c4" stop-opacity="0"/></radialGradient>
+      </defs>
+      <ellipse class="ripple" cx="120" cy="131" rx="83" ry="12" fill="url(#glow)"/>
+      <path d="M38 132q82-13 164 0M65 139q55-7 110 0" stroke="#85b8a4" stroke-opacity=".5" stroke-linecap="round"/>
+      <g class="petals" stroke="#558f81" stroke-width=".7" stroke-linejoin="round">
+        <path d="M120 127C66 135 30 102 26 65c39 2 80 15 94 62Z" fill="url(#jade)"/>
+        <path d="M120 127c54 8 90-25 94-62-39 2-80 15-94 62Z" fill="url(#jade)"/>
+        <path d="M120 125C73 117 55 74 67 28c36 17 57 46 53 97Z" fill="url(#blush)"/>
+        <path d="M120 125c47-8 65-51 53-97-36 17-57 46-53 97Z" fill="url(#blush)"/>
+        <path d="M120 123C83 99 87 52 120 9c33 43 37 90 0 114Z" fill="url(#blush)"/>
+        <path d="M120 128C77 136 47 119 40 91c35-7 63 3 80 37Z" fill="url(#jade)"/>
+        <path d="M120 128c43 8 73-9 80-37-35-7-63 3-80 37Z" fill="url(#jade)"/>
+        <path d="M120 129c-26-10-30-37 0-65 30 28 26 55 0 65Z" fill="url(#blush)"/>
+      </g>
+      <path d="M108 119q12 6 24 0" stroke="#c6ac71" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="pet-tools hit"><span id="quiet">半刻 · 念念相续</span><button id="settings" aria-label="莲花桌宠设置" title="莲花桌宠设置">⚙</button></div>
+</main><script src="lotus.js"></script></body></html>
