@@ -285,7 +285,7 @@
     };
     $('startAtLogin').onchange = async () => {
       const enabled = $('startAtLogin').checked;
-      if (await desktopOperation('setStartAtLogin',enabled)) toast(desktopStatus.startAtLogin ? '已启用登录 Windows 自动启动' : '已关闭登录 Windows 自动启动');
+      if (await desktopOperation('setStartAtLogin',enabled)) toast(desktopStatus.startAtLogin ? '已启用登录系统自动启动' : '已关闭登录系统自动启动');
     };
     $('minimizeWindow').onclick = () => nativeWindowAction('minimize');
     $('maximizeWindow').onclick = () => nativeWindowAction('maximize');
@@ -644,7 +644,7 @@
   }
   async function openDesktop(){
     openDialog($('desktopDialog'));
-    try{const info=await D.getInfo();$('desktopVersion').textContent='版本 '+(info.version || D.version || '1.3.2')+' · Windows 桌面版';$('dataDirectory').textContent=info.dataPath || '本机应用数据目录';}
+    try{const info=await D.getInfo();$('desktopVersion').textContent='版本 '+(info.version || D.version || '1.3.2')+(info.platform==='darwin'?' · macOS 桌面版':' · Windows 桌面版');$('dataDirectory').textContent=info.dataPath || '本机应用数据目录';}
     catch(_){$('desktopVersion').textContent='Windows 桌面版';}
   }
   function setWeek(week) {
@@ -716,7 +716,7 @@
     window.BankeView = Object.freeze({preparePrint(){currentPage='calendar';render();return true;}});
     if(typeof D.rendererReady==='function')D.rendererReady();
     if (typeof D.onState === 'function') D.onState(acceptRemote);
-    if (typeof D.getInfo === 'function') D.getInfo().then(info => { if (info && info.startupNotice) toast(info.startupNotice); }).catch(() => {});
+    if (typeof D.getInfo === 'function') D.getInfo().then(info => { if (info && info.startupNotice) toast(info.startupNotice); if(info && info.platform==='darwin'){document.title='半刻 · 我的周计划 · macOS';$('desktopTitle').textContent='半刻 · macOS 桌面版';const launch=$('platformLaunchHelp');if(launch)launch.innerHTML='<h3>从 Dock 打开半刻</h3><p>在 Dock 中右键点击半刻图标，可选择保留在 Dock。点击 Dock 图标可恢复普通编辑窗口；编辑后可再次固定到桌面。桌面模式不遮挡其他应用窗口。</p>';const hint=$('syncNetworkHint');if(hint)hint.textContent='请选择与手机同一 Wi-Fi 的地址；macOS 询问本地网络访问时，请允许半刻连接。';} }).catch(() => {});
     if(!storageUnavailable)showStorageState();
   }
   initialize();

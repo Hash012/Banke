@@ -12,7 +12,8 @@
     "test": "node --test desktop/tests/*.test.cjs tests/*.test.cjs",
     "dist:win": "electron-builder --win nsis zip --x64 --publish never",
     "pack:win": "electron-builder --win --x64 --dir --publish never",
-    "postinstall": "node scripts/install-runtime.cjs"
+    "postinstall": "node scripts/install-runtime.cjs",
+    "dist:mac": "electron-builder --mac dmg zip --publish never"
   },
   "dependencies": {
     "koffi": "3.3.3"
@@ -74,10 +75,18 @@
     },
     "mac": {
       "target": [
+        "dmg",
         "zip"
       ],
       "category": "public.app-category.productivity",
-      "identity": null
+      "identity": null,
+      "icon": "desktop/assets/icon-512.png",
+      "minimumSystemVersion": "12.0",
+      "hardenedRuntime": false,
+      "artifactName": "Banke-Community-${version}-macOS-${arch}-preview.${ext}",
+      "extendInfo": {
+        "NSLocalNetworkUsageDescription": "半刻使用同一 Wi-Fi 内的本地网络，与已配对手机加密同步日程。"
+      }
     },
     "electronDist": "node_modules/electron/dist"
   }

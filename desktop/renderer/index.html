@@ -146,11 +146,11 @@
   <div class="modal-header"><h2 id="desktopModeTitle">桌面模式</h2><button type="button" class="icon-button close-dialog" aria-label="关闭">×</button></div>
   <div class="modal-body desktop-help">
     <p id="desktopStateSummary" class="desktop-state-summary">正在读取窗口状态…</p>
-    <p>固定后，日程展开在屏幕右半边。其他软件可以盖住它；回到 Windows 桌面时，日程仍保持展开。编辑方式与普通窗口相同。</p>
+    <p>固定后，日程展开在屏幕右半边。其他软件可以盖住它；回到桌面时，日程仍保持展开。编辑方式与普通窗口相同。</p>
     <button id="desktopDialogToggle" class="button primary full-width" type="button">固定到桌面右半屏</button>
     <button id="nextDisplayButton" class="button secondary full-width" type="button" disabled>移到下一块屏幕</button>
     <p id="desktopDisplayLabel" class="field-help">固定后可选择显示日程的屏幕。</p>
-    <label class="checkbox-label startup-label"><input id="startAtLogin" type="checkbox" disabled> 登录 Windows 时自动启动半刻</label>
+    <label class="checkbox-label startup-label"><input id="startAtLogin" type="checkbox" disabled> 登录系统时自动启动半刻</label>
     <p id="startAtLoginHelp" class="field-help">正在读取自动启动设置…</p>
     <p id="desktopModeError" class="form-error" role="alert" hidden></p>
   </div>
@@ -160,9 +160,9 @@
   <div class="modal-header"><div><p class="eyebrow">YOUR OWN DESKTOP SPACE</p><h2 id="desktopTitle">半刻 · Windows 桌面版</h2></div><button type="button" class="icon-button close-dialog" aria-label="关闭">×</button></div>
   <div class="modal-body desktop-help">
     <div class="install-hero"><svg viewBox="0 0 64 48" aria-hidden="true"><rect x="6" y="3" width="52" height="33" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 44h20M32 36v8M24 19l6 6 12-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><p>独立运行 · 离线可用<br><strong>每一次编辑，保存到本机</strong></p></div>
-    <p id="desktopVersion" class="field-help">版本 1.3.1 · Windows 桌面版</p>
+    <p id="desktopVersion" class="field-help">版本 1.3.2 · 桌面版</p>
     <h3>在桌面右半屏保持展开</h3><p>点击窗口顶部“固定到桌面”。日程会收起侧栏，在右半屏完整显示周一至周日。其他软件可以盖住它；回到桌面时仍保持展开。顶部“返回普通窗口”可恢复普通窗口，“退出软件”可关闭半刻。通过旁边的“桌面模式设置”可换一块屏幕或开启登录 Windows 自动启动。</p>
-    <h3>固定到 Windows 任务栏</h3><p>先点击顶部“返回普通窗口”，再在底部任务栏右键点击“半刻”的图标，选择“固定到任务栏”。以后点击该图标即可打开普通编辑窗口；编辑后可再次固定到桌面。也可以从开始菜单找到“半刻周计划”。桌面模式下，右下角系统托盘仍保留半刻入口。</p>
+  <section id="platformLaunchHelp"><h3>固定到 Windows 任务栏</h3><p>先点击顶部“返回普通窗口”，再在底部任务栏右键点击“半刻”的图标，选择“固定到任务栏”。以后点击该图标即可打开普通编辑窗口；编辑后可再次固定到桌面。也可以从开始菜单找到“半刻周计划”。桌面模式下，右下角系统托盘仍保留半刻入口。</p></section>
     <h3>数据保存在哪里</h3><p>每次保存安排都会写入本机日程文件。软件也会保留上一份有效数据，方便恢复。卸载软件会保留日程数据。</p><p id="dataDirectory" class="data-directory">%APPDATA%\BankeCommunity</p>
     <button id="helpDownloadOffline" class="button secondary full-width">打开日程数据文件夹</button>
     <h3>迁移原来的安排</h3><p>在原来的网页版或 HTML 文件中导出 JSON 备份，再在桌面版“备份与导出”中选择“导入备份”。导入前会请你保存当前数据副本。</p><p>导入或打印时会打开普通窗口，完成后可再次固定到桌面。</p>
@@ -182,7 +182,7 @@
     <section id="syncConnection" hidden>
       <div id="syncPending"></div>
       <h3>1 · 在手机中填写电脑地址</h3><div id="syncAddresses"></div>
-      <p class="caption">请选择与你手机连接的 Wi-Fi 对应的地址。Windows 若询问网络访问，请仅允许家庭或学校的专用网络。</p>
+      <p id="syncNetworkHint" class="caption">请选择与你手机连接的 Wi-Fi 对应的地址。Windows 若询问网络访问，请仅允许家庭或学校的专用网络。</p>
       <h3>2 · 开始配对，再核对两端数字</h3>
       <button id="syncPair" class="button" type="button">允许新手机配对 · 2 分钟</button>
       <p id="syncPairWindow" class="caption"></p>

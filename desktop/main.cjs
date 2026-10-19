@@ -5,7 +5,7 @@ const path = require("node:path");
 const { fileURLToPath } = require("node:url");
 const { MAX_PAYLOAD_BYTES, createStateStore, atomicWriteFileSync, friendlyFileError } = require("./lib/state-store.cjs");
 const { createDesktopPreferences } = require("./lib/desktop-preferences.cjs");
-const { createDesktopLayer } = require("./lib/desktop-layer.cjs");
+const { createDesktopLayer } = require("./lib/platform-desktop-layer.cjs");
 const { createWorkspaceController } = require("./lib/workspace-controller.cjs");
 const { createBackupManager } = require("./lib/backup-manager.cjs");
 const { configureRendering, prepareWindowPreferences } = require("./lib/runtime-compatibility.cjs");
@@ -113,7 +113,7 @@ function createDesktopApplication(electron, options={}) {
     {label:'返回普通窗口',click:showEditor},
     {label:'切换显示器',enabled:s.mode==='desktop',click:()=>controller.nextDisplay()},
     {type:'separator'},
-    {label:'登录 Windows 时自动启动',type:'checkbox',checked:s.startAtLogin,enabled:s.canStartAtLogin,click:item=>controller.setStartAtLogin(item.checked)},
+    {label:platform==='darwin'?'登录 Mac 时自动启动':'登录 Windows 时自动启动',type:'checkbox',checked:s.startAtLogin,enabled:s.canStartAtLogin,click:item=>controller.setStartAtLogin(item.checked)},
     {type:'separator'},{label:'退出半刻',click:()=>app.quit()}];}
   function retireWidget(w){if(!w)return;retiring.add(w);if(widget===w)widget=null;windows.delete(w);try{if(alive(w))w.destroy();}catch(e){log('retire-widget',e);}}
   function createWindow(role){
@@ -222,6 +222,7 @@ function createDesktopApplication(electron, options={}) {
     });
   }
   app.on('second-instance',()=>{showEditor().catch(e=>log('relaunch',e));});
+  app.on('activate',()=>{if(platform==='darwin'&&controller)showEditor().catch(e=>log('activate',e));});
   app.on('before-quit',()=>{quitting=true;controller?.dispose();anchor?.dispose();service?.dispose();if(tray&&!tray.isDestroyed())tray.destroy();});
   app.on('window-all-closed',()=>{if(!quitting&&controller?.wantsDesktop())return;app.quit();});
   const ready=app.whenReady().then(async()=>{
@@ -229,12 +230,13 @@ function createDesktopApplication(electron, options={}) {
     const preferences=options.preferences || createDesktopPreferences({directory});startupNotice=prepareWindowPreferences(directory,preferences,platform);
     service=options.syncService || createSyncService({directory,store,port:options.syncPort,onState:r=>sendAll('banke:state-changed',r),onStatus:r=>sendAll('banke:sync-status-changed',r)});
     backup=createBackupManager({directory,service});
-    controller=createWorkspaceController({app,screen,preferences,layer:options.layer || createDesktopLayer({platform}),platform,
+    controller=createWorkspaceController({app,screen,preferences,layer:options.layer || createDesktopLayer({platform,resolveWindow:handle=>Array.from(windows).find(w=>alive(w)&&w.getNativeWindowHandle().equals(handle))}),platform,
       getEditor:()=>editor,makeEditor:()=>createWindow('editor'),getWidget:()=>widget,makeWidget:()=>createWindow('desktop'),
       waitReady:w=>loads.get(w).promise,retireWidget,onStatusChange:statusChanged,timers:options.timers});
     if(platform==='win32')anchor=createTaskbarAnchor({BrowserWindow,app,appId:APP_ID,icon:path.join(__dirname,'assets','icon.ico'),onRestore:showEditor,onQuit:()=>app.quit()});
     installIpc();
     Menu.setApplicationMenu(Menu.buildFromTemplate([
+      ...(platform==='darwin'?[{role:'appMenu'}]:[]),
       {label:'文件',submenu:[{label:'添加安排',accelerator:'CmdOrCtrl+N',click:()=>dispatch('add')},{label:'导出备份',click:()=>dispatch('backup')},{label:'导入备份',accelerator:'CmdOrCtrl+O',click:()=>dispatch('import')},{label:'打印',accelerator:'CmdOrCtrl+P',click:()=>dispatch('print')},{label:'打开数据文件夹',click:openFolder},{type:'separator'},{label:'退出半刻',click:()=>app.quit()}]},
       {label:'编辑',submenu:[{label:'撤销日程编辑',click:()=>dispatch('undo')},{role:'cut'},{role:'copy'},{role:'paste'},{role:'selectAll'}]},
       {label:'桌面',submenu:desktopMenu()},{label:'帮助',submenu:[{label:'使用说明',click:()=>dispatch('help')},{label:'关于',click:()=>dialog.showMessageBox({message:'半刻周计划 '+VERSION,detail:'独立普通窗口 + 可替换桌面挂件\n日程与手机配对数据保存在本机。',buttons:['知道了']})}]}

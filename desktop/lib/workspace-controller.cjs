@@ -7,7 +7,9 @@ const { rightHalfBounds, clampWindowBounds } = require('./desktop-preferences.cj
 function createWorkspaceController(options) {
   const { app, screen, layer, preferences, getEditor, makeEditor, getWidget, makeWidget, waitReady, retireWidget } = options;
   const timers = options.timers || { setTimeout, clearTimeout, setInterval, clearInterval };
-  const supported = (options.platform || process.platform) === 'win32' && !!layer && !!screen;
+  const platform=options.platform || process.platform;
+  const supported = ['win32','darwin'].includes(platform) && !!layer && !!screen;
+  const nativeBounds=bounds=>platform==='win32'?screen.dipToScreenRect(null,bounds):bounds;
   const loaded = preferences.load();
   let prefs = loaded.ok ? loaded.state : { version: 1, mode: 'window', displayId: null, normalBounds: null };
   let mode = 'window', connected = false, error = '', disposed = false, epoch = 0, pending = null, poll = null, recoveryQueued = false;
@@ -17,7 +19,7 @@ function createWorkspaceController(options) {
   function displays() { try { return screen.getAllDisplays().filter(x => x.workArea && x.workArea.width > 0 && x.workArea.height > 0); } catch { return []; } }
   function display() { const all = displays(); return all.find(x => x.id === prefs.displayId) || (screen && screen.getPrimaryDisplay()) || {id:0,workArea:{x:0,y:0,width:1440,height:940}}; }
   function loginState() {
-    try { const settings = app.getLoginItemSettings({ path: '"' + app.getPath('exe') + '"', args: [] }); return !!settings.openAtLogin || !!(settings.launchItems || []).find(x => x.name === 'BankeCommunity' && x.enabled && x.scope === 'user'); } catch { return false; }
+    try { const settings = app.getLoginItemSettings(platform==='darwin'?{}:{ path: '"' + app.getPath('exe') + '"', args: [] }); return !!settings.openAtLogin || !!(settings.launchItems || []).find(x => x.name === 'BankeCommunity' && x.enabled && x.scope === 'user'); } catch { return false; }
   }
   const canStartAtLogin = supported && app.isPackaged && typeof app.setLoginItemSettings === 'function';
   function status() { const d = display(); return {ok:true,mode,connected,supported,displayLabel:d.label || '显示器 '+d.id,canStartAtLogin:!!canStartAtLogin,startAtLogin:canStartAtLogin ? loginState() : false,...(error?{error}:{})}; }
@@ -68,7 +70,7 @@ function createWorkspaceController(options) {
   }
   async function pin() {
     if(disposed)return {ok:false,error:'软件正在退出。'};
-    if(!supported)return {ok:false,error:'固定到桌面仅适用于 Windows。'};
+    if(!supported)return {ok:false,error:'当前系统不支持固定到桌面。'};
     if(pending)return pending;
     const token=++epoch;
     const operation=(async()=>{
@@ -80,7 +82,7 @@ function createWorkspaceController(options) {
         const d=display(), dip=rightHalfBounds(d.workArea);
         let result;
         if(attached.has(widget)) {
-          result=layer.position(handles.get(widget),screen.dipToScreenRect(null,dip));
+          result=layer.position(handles.get(widget),nativeBounds(dip));
           if(!result.ok){retire(widget);widget=makeWidget();await waitReady(widget);}
         }
         if(!attached.has(widget)) {
@@ -91,7 +93,7 @@ function createWorkspaceController(options) {
           // the desktop blank even though capturePage contains the full UI.
           call(widget,'showInactive');
           const h=widget.getNativeWindowHandle(); handles.set(widget,h);
-          result=layer.attach(h,screen.dipToScreenRect(null,dip));
+          result=layer.attach(h,nativeBounds(dip));
           if(!result.ok || !result.attached)throw new Error(result.error || '无法连接桌面。');
           attached.add(widget);
         }
@@ -113,16 +115,16 @@ function createWorkspaceController(options) {
     if(disposed || mode!=='desktop' || pending || recoveryQueued)return;
     const widget=getWidget();
     let result;
-    try{result=alive(widget) ? layer.position(handles.get(widget),screen.dipToScreenRect(null,rightHalfBounds(display().workArea))) : {ok:false};}catch(e){result={ok:false,error:e.message};}
+    try{result=alive(widget) ? layer.position(handles.get(widget),nativeBounds(rightHalfBounds(display().workArea))) : {ok:false};}catch(e){result={ok:false,error:e.message};}
     if(result.ok){connected=true;return;}
-    connected=false;error='Windows 桌面连接已变化，正在打开普通窗口。';publish();
+    connected=false;error='桌面连接已变化，正在打开普通窗口。';publish();
     recoveryQueued=true;
     showEditor({focus:false}).finally(()=>{retire(widget);recoveryQueued=false;});
   }
   async function nextDisplay() { const all=displays();if(mode!=='desktop'||all.length<2)return {ok:false,error:'请在连接多块显示器的桌面模式下切换。'};prefs={...prefs,displayId:all[(all.findIndex(x=>x.id===display().id)+1)%all.length].id};const result=await pin();return result; }
   function setStartAtLogin(enabled) {
-    if(!canStartAtLogin || typeof enabled!=='boolean')return {ok:false,error:'无法设置 Windows 登录启动。'};
-    try{app.setLoginItemSettings({openAtLogin:enabled,enabled,name:'BankeCommunity',path:app.getPath('exe'),args:[]});error='';return publish();}catch(e){return {ok:false,error:e.message};}
+    if(!canStartAtLogin || typeof enabled!=='boolean')return {ok:false,error:'无法设置系统登录启动。'};
+    try{app.setLoginItemSettings(platform==='darwin'?{openAtLogin:enabled}:{openAtLogin:enabled,enabled,name:'BankeCommunity',path:app.getPath('exe'),args:[]});error='';return publish();}catch(e){return {ok:false,error:e.message};}
   }
   function windowClosed(win) { if(win===getWidget() && mode==='desktop' && !disposed)showEditor({focus:false}).catch(()=>{}); }
   async function initialize() { const previous=prefs.mode; await showEditor({remember:false});if(previous==='desktop' && supported)return pin();return status(); }
