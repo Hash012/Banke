@@ -12,7 +12,22 @@
 
 ## 下载哪个文件
 
-维护者应把成品上传到本仓库的 **Releases → Assets**；GitHub 的“Code → Download ZIP”下载的是源码，不是安装包。
+点击下表直接下载：Windows 为可直接运行的便携版 EXE（没有安装向导），Android 为可安装的 APK，均无需解压。Mac 当前仍提供 ZIP，尚未提供 DMG/PKG 安装包。GitHub 的“Code → Download ZIP”下载的是源码。
+
+| 平台 | 直接下载 |
+| --- | --- |
+| Windows 10/11 x64 | [下载 Windows 程序（EXE）](https://github.com/Hash012/Banke/releases/download/v1.1.0/Banke-Windows.exe) |
+| Android 8+，及仍兼容 APK 的鸿蒙 | [下载 Android 安装包（APK）](https://github.com/Hash012/Banke/releases/download/v1.1.0/Banke-Android.apk) |
+| Apple Silicon Mac | [下载 Apple Silicon 版（ZIP，需解压）](https://github.com/Hash012/Banke/releases/download/v1.1.0/Banke-Mac-arm64.zip) |
+| Intel Mac | [下载 Intel 版（ZIP，需解压）](https://github.com/Hash012/Banke/releases/download/v1.1.0/Banke-Mac-intel.zip) |
+| iPhone / iPad | 暂无可直接安装的下载，见下方说明 |
+| 源码 | [下载源码（ZIP）](https://github.com/Hash012/Banke/releases/download/v1.1.0/Banke-Source.zip) |
+
+[发布详情](https://github.com/Hash012/Banke/releases/tag/v1.1.0) · [下载文件 SHA-256 校验清单](https://github.com/Hash012/Banke/releases/download/v1.1.0/SHA256SUMS.txt)
+
+直接下载的 EXE/APK 请与上述 Release 校验清单核对；仓库根目录的 `SHA256SUMS.txt` 校验的是原始 ZIP 文件。
+
+以下为原始压缩包内容和平台要求：
 
 | 系统 | 交付文件 | 使用方式和限制 |
 | --- | --- | --- |
