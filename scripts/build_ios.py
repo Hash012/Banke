@@ -5,7 +5,12 @@ import argparse,json,os,plistlib,shutil,subprocess,sys,tempfile,time
 ROOT=Path(__file__).resolve().parents[1];PROJECT=ROOT/'mobile/ios/BankeCommunity.xcodeproj'
 def command(args,log=None):
     if log:
-        with log.open('w',encoding='utf-8') as out:p=subprocess.run(args,cwd=ROOT,stdout=out,stderr=subprocess.STDOUT,text=True)
+        with log.open('w',encoding='utf-8') as out:
+            with subprocess.Popen(args,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,bufsize=1) as p:
+                for line in p.stdout:
+                    out.write(line);out.flush()
+                    if any(mark in line for mark in ['APPLE_SMOKE','Test Case','Test Suite','error:','** TEST','** BUILD']):print(line.rstrip(),flush=True)
+                p.wait()
         if p.returncode:
             lines=log.read_text('utf-8',errors='replace').splitlines();errors=[x for x in lines if 'error:' in x.lower() or 'failed' in x.lower()]
             print('\n'.join((errors or lines[-30:])[-25:]));raise RuntimeError('Native Xcode operation failed; full log stays local')
@@ -53,6 +58,7 @@ def main():
                 time.sleep(.1)
             if not ready.exists():raise RuntimeError('Controlled sync fixture never became ready')
             command(['xcrun','simctl','boot',udid]);command(['xcrun','simctl','bootstatus',udid,'-b'],local/'ios-simulator-boot.log')
+            print('Owned simulator booted; starting actual WKWebView tests',flush=True)
             result=local/('ios-smoke-'+str(int(time.time()))+'.xcresult')
             command(base+['-configuration','Debug','-sdk','iphonesimulator','-destination','platform=iOS Simulator,id='+udid,'-parallel-testing-enabled','NO','-maximum-concurrent-test-simulator-destinations','1','-resultBundlePath',str(result),'CODE_SIGNING_ALLOWED=NO','test'],local/'ios-test.log')
             container=Path(command(['xcrun','simctl','get_app_container',udid,'org.banke.community.ios','data']))

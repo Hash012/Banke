@@ -17,13 +17,20 @@ final class IOSAppSmokeTests: XCTestCase {
     }
     private func js(_ source: String) async throws -> Any? {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
-            host.webView.callAsyncJavaScript("return await (" + source + ");", arguments: [:], in: nil, in: .page) { result in
-                switch result {
-                case .success(let value): continuation.resume(returning: value)
-                case .failure(let error): continuation.resume(throwing: error)
-                }
+            host.webView.evaluateJavaScript(source) { value, error in
+                if let error = error { continuation.resume(throwing: error) }
+                else { continuation.resume(returning: value) }
             }
         }
+    }
+    // Retain the operation in the page and poll plain values. WebKit can collect
+    // a callAsyncJavaScript completion while a native bridge Promise is pending.
+    private func asyncJS(_ source: String) async throws -> Any? {
+        _ = try await js("(()=>{const p=window.__appleSmoke={done:false};p.operation=Promise.resolve(" + source + ").then(v=>{p.value=v;p.done=true;},()=>{p.failed=true;p.done=true;});return true;})()")
+        try await wait("window.__appleSmoke.done", seconds: 40)
+        let failed = try await js("window.__appleSmoke.failed===true") as? Bool
+        guard failed != true else { throw NSError(domain: "BankeAsyncSmoke", code: 1) }
+        return try await js("window.__appleSmoke.value")
     }
     private func wait(_ source: String, seconds: Int = 18) async throws {
         let deadline = Date().addingTimeInterval(TimeInterval(seconds))
@@ -63,6 +70,7 @@ final class IOSAppSmokeTests: XCTestCase {
         XCTAssertThrowsError(try LANTransport.endpoint("http://192.168.1.2:47831/banke/v1/message", method: "GET"))
     }
     func testRealWebViewOfflinePersistenceAndEncryptedRoundtrip() async throws {
+        print("APPLE_SMOKE phase=blank-and-crypto")
         let initialCount = try await js("window.BankeHost.loadState().state.events.length") as? Int
         let webCrypto = try await js("!!crypto.subtle") as? Bool
         XCTAssertEqual(initialCount, 0)
@@ -71,6 +79,7 @@ final class IOSAppSmokeTests: XCTestCase {
         _ = try await js("(()=>{document.getElementById('addEvent').click();document.getElementById('eventTitle').value='iOS simulator smoke';document.getElementById('eventStart').value='19:40';document.getElementById('eventEnd').value='20:00';document.getElementById('eventWeeks').value='1';document.getElementById('saveEvent').click();return true;})()")
         try await wait("window.BankeHost.loadState().state.events.length===1")
         try await snapshot("ios-offline-saved")
+        print("APPLE_SMOKE phase=offline-saved-reload")
         host.webView.reload()
         try await wait("!!window.BankeHost && window.BankeHost.loadState().ok && window.BankeHost.loadState().state.events.length===1 && document.getElementById('app').getAttribute('aria-busy')==='false'")
         let source = Bundle(for: Self.self).url(forResource: "apple-test-config", withExtension: "json")!
@@ -78,10 +87,17 @@ final class IOSAppSmokeTests: XCTestCase {
         var paired = false
         if let address = runtime["address"] as? String, !address.isEmpty {
             let literal = String(data: try JSONSerialization.data(withJSONObject: address, options: [.fragmentsAllowed]), encoding: .utf8)!
-            let pairedOK = try await js("(async()=> (await window.BankeHost.pair(" + literal + ")).ok)()") as? Bool
+            print("APPLE_SMOKE phase=native-lan-pair")
+            let pairedOK = try await asyncJS("(async()=> (await window.BankeHost.pair(" + literal + ")).ok)()") as? Bool
             XCTAssertEqual(pairedOK, true)
-            try await wait("(async()=> {await window.BankeHost.syncNow();const s=await window.BankeHost.getSyncStatus();return s.paired&&s.phase==='connected';})()", seconds: 30)
-            try await wait("(async()=> {await window.BankeHost.syncNow();return window.BankeHost.loadState().state.events[0].title==='iOS desktop roundtrip';})()", seconds: 25)
+            print("APPLE_SMOKE phase=approval-and-sync")
+            for _ in 0..<12 {
+                _ = try await asyncJS("window.BankeHost.syncNow()")
+                if try await asyncJS("(async()=>{const s=await window.BankeHost.getSyncStatus();return s.paired&&s.phase==='connected';})()") as? Bool == true { break }
+                try await Task.sleep(nanoseconds: 500_000_000)
+            }
+            try await wait("window.BankeHost.loadState().state.events[0].title==='iOS desktop roundtrip'", seconds: 25)
+            print("APPLE_SMOKE phase=encrypted-roundtrip-passed")
             paired = true
         }
         let result: [String: Any] = ["nativeWKWebView": true, "blankFirstRun": true, "offlineUISave": true, "diskPersistenceAfterWebViewReload": true, "webCryptoAvailable": true, "actualEncryptedDesktopRoundtrip": paired, "scope": "iOS Simulator; not a physical iPhone"]
