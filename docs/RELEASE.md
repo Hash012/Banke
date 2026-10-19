@@ -2,7 +2,7 @@
 
 ## 1.3.4 · 文本识别导入
 
-沿用用户已明确授权的私有版更新、通用版发布和 README 同步。Windows 与 Android 更新到 1.3.4；Apple 已发布预览仍为 1.3.2。新功能采用离线解析与确认预览，不提供 DeepSeek 配置。下载目标为 v1.3.4；是否已经公开，以 PUBLISHED.md 的实际核验为准。
+沿用用户已明确授权的私有版更新、通用版发布和 README 同步。Windows 与 Android 更新到 1.3.4；Apple 已发布预览仍为 1.3.2。新功能采用离线解析与确认预览，不提供 DeepSeek 配置。[v1.3.4 已正式公开](https://github.com/Hash012/Banke/releases/tag/v1.3.4)，6 个附件无认证完整下载与摘要核验通过，CI success；详细记录见 PUBLISHED.md。
 
 私有手机旧 APK 和更新 web 资源仅留在忽略目录，缺原签名，不能冒充可覆盖安装的升级包。新版公开 APK 仅使用原通用版稳定签名。
 

@@ -27,6 +27,8 @@ Android 1.3.4 已由公开 Java 与网页源码构建，官方 apksigner 验证�
 
 本轮 Android 真机、软键盘、物理手势、新功能跨设备同步、Mac/iPhone、锁屏、睡眠唤醒、长期运行与 DeepSeek 未测；本功能不调用 DeepSeek。发布与公开下载核验在 PUBLISHED.md 记录。
 
+发布后核验：v1.3.4 已公开为 Latest，6 个附件均经 GitHub 服务器摘要及无认证完整下载校验；公开 README 和两张功能图片逐字节一致。源码提交 `9cb89d364d6254504253741d18232eadd69d68a6` 的 Actions `39292302233` completed／success。没有把 CI 临时签名 APK 作为正式升级包；私人资源、用户截图、运行数据及签名未上传。
+
 ## 2026-10-20：1.3.3 正式发行前验收
 
 用户明确授权私有版原位更新、通用版发布及 README 同步。电脑版版本统一为 1.3.3，Android 保留已发布原签名 1.3.2；手机网页、空 seed 与协议未改。无 Computer Use，实际方式继续为原生 Windows Electron、Win32、Windows UI Automation 与仅测试实例的本地 CDP。

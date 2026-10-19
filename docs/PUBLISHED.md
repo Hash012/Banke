@@ -1,10 +1,15 @@
 # 发布后核验
 
-## 1.3.4 · 文本识别导入（发布前记录）
+## 1.3.4 · 文本识别导入
 
-本机逻辑回归、两版完整 Windows EXE、通用版 NSIS 新装／1.3.3 覆盖升级、安装后运行、便携 ZIP 独立解压运行、Android 原稳定签名及资源校验、源码隐私审计均已执行，详见 TESTING。私有电脑版已原位更新最终程序并核对真实存档和配对保留。
+2026-10-20 已公开发布：[v1.3.4](https://github.com/Hash012/Banke/releases/tag/v1.3.4)，并以无认证 API 确认为 Latest。源码标签固定在 `9cb89d364d6254504253741d18232eadd69d68a6`，发布后文档记录另行提交，未移动标签或改写附件。
 
-当前源码快照准备发布 v1.3.4；草稿上传不等于公开发行。后续以公开 Release、无认证完整附件下载摘要和 README 实际入口核验记录为准。私有手机缺原签名私钥，未生成改签升级 APK；手机页面验收不替代真机安装或同步验收。
+- 6 个附件：Windows 完整 NSIS、完整 ZIP、原签名 Android APK、公开源码 ZIP、release-manifest.json、SHA256SUMS.txt；草稿上传时 GitHub 服务器 SHA-256 与本机构建一致。
+- 公开后以不带认证的客户端，从用户可用下载地址完整下载上述 6 个附件，各自 SHA-256 与本机一致。记录 `.local/release134-public-verification.json`；没有仅凭文件名、大小、HEAD 或上传成功判定发布完成。
+- 公开 README、莲花与文本导入图片与本机逐字节一致；GitHub 页面实际包含新版 Windows／Android 下载与功能图。记录 `.local/release134-readme-verification.json`。
+- [GitHub Actions 39292302233](https://github.com/Hash012/Banke/actions/runs/39292302233) 已 completed／success；本地逻辑测试 73 项中 72 通过、1 符号链接权限跳过。两版完整 Windows 程序、新装／覆盖升级后运行、便携独立解压、私有原位更新与数据保留见 TESTING。
+
+私有电脑版最终 1.3.4 已原位更新并核对真实存档、完成项和原配对保留；私有手机 APK 原件及更新页面仅在本机忽略目录，缺原签名私钥，未生成改签升级 APK。手机页面验收及官方签名校验不替代 Android 真机安装、软键盘或新功能跨设备同步验收。
 
 ## 1.3.3 · 莲花桌宠
 
