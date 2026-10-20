@@ -1,117 +1,103 @@
 # 半刻 Banke · 把日子安排得刚刚好
 
-**Windows / Android 1.3.4 · 文本识别导入 · 莲花桌宠 · 默认空白日程 · MIT**
+半刻是一款用来安排课程和日常事务的周计划应用。添加安排时，可以把起止时间精确到分钟，并选择在哪些教学周重复。平时可以在日历或列表中查看，需要留档时也能导出或打印。
 
-桌面端保留周计划、课程与安排、待核对、分钟精度、撤销、JSON/CSV/HTML 导出、备份导入、打印、桌面右半屏挂件、返回普通窗口、任务栏/托盘和局域网加密同步。手机版使用同一正式版的手机界面，可先离线编辑，再与电脑配对同步。
+在 Windows 上，半刻既能像普通软件一样打开，也能把日程固定在桌面右半屏，方便随时查看。手机端可以离线记录和修改安排，之后再通过同一 Wi-Fi 与电脑同步。
 
-通用版只移除了私人初始课表和个性化数据，并分离应用标识、存档、配对与开机启动项。首次打开没有课程，不扫描、不读取、不迁移私人版的数据。
-
-## 文本识别导入
-
-Windows 左栏点击 **文本识别导入**；手机在顶部点击同名按钮。粘贴文字，点击“识别并预览”，可逐条修改名称、星期、起止时间、周次、类型和地点，勾选后确认导入。取消预览不会写入日程。
-
-```text
-第1-16周（单周）
-周一、周三 09:00-10:00 数学 @A楼
-明天下午三点到五点 项目讨论
-周五 写报告（时间待定）
-```
-
-支持中文或数字时间、明确日期、今天／明天／后天、本周／下周、多个星期及单双周。相对日期按北京时间计算；未写周次暂用当前查看周，并标记待核对。复杂自然语言可能识别不全，请检查预览。
-
-- 时间完整但有疑点：加入日程表，同时显示在“待核对”；核实后可清除标记。
-- 缺名称、日期、起止时间或有效周次：只保留待补全草稿，不编造时间占用网格；在“待核对”补齐并预览后加入。
-- 同名、同星期、同时间、同地点的重复周次自动跳过；只补上尚未存在的周次。
-- 草稿仅保存在当前设备，补齐成为日程后按原配对同步。电脑版草稿独立存储；手机草稿保存在应用 WebView 本地存储。
-
-本版采用**离线规则解析**，不调用人工智能，不发送输入内容，不需要 DeepSeek API Key；暂不提供 DeepSeek 配置。
-
-![文本导入：真实 Windows 原生窗口中的合成预览](docs/media/text-import-desktop.png)
-
-## 莲花桌宠 · 念念相续
-
-Windows 1.3.3 新增禅意莲花桌宠。点击右上角 **❀** 或桌面菜单中的“莲花桌宠与提醒”，勾选开启后保存。开始、结束提醒可分别开关，分别设置提前 **0–1440 分钟**，默认开始前 **5 分钟**、结束前 **1 分钟**；0 表示准时提醒。
-
-莲花可拖动并记住位置，透明区域可点击穿透，也可单独选择是否悬浮在其他窗口上方。提醒按真实日期与适用周次触发，跳过已完成安排，多条提醒逐条确认，退出重开不会重复提醒。设置仅保存在当前电脑版；半刻运行时才提醒。原桌面右半屏日程挂件继续保留。
-
-![Windows 1.3.3 莲花桌宠“念念相续”，真实打包程序内的合成提醒截图](docs/media/lotus-desktop.png)
-
-截图来自本机 Windows 运行实际打包程序，日程为合成记录；不是私人日程。升级前正常退出旧版，再运行完整安装包，已有通用版日程和配对保留。实测方式与未测项目见 [TESTING](docs/TESTING.md)。
-
-## 真实使用演示
-
-下方是 **Windows 实际安装的社区版 1.3.2** 的操作动图；点击可打开完整 MP4 视频。演示日程全部为合成示例，首次安装仍为空白。展示：周计划 → 课程列表 → 修改安排 → 保存后返回周计划。
-
-[![半刻社区版实机操作演示，点击打开完整视频](docs/media/community-demo.gif)](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Demo-1.3.2.mp4)
-
-[观看或下载完整视频（16.8 秒，无音轨）](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Demo-1.3.2.mp4) · [查看真实截图](docs/media/community-desktop.png) · [录制来源](docs/media/README.md)
+通用版第一次打开时是空白日程，需要你自己添加内容。它与私人版分别保存数据和配对信息，不会自动读取或导入私人版的课表。目前 Windows 和 Android 的正式版本是 1.3.4，源码按 MIT 许可证开放；macOS 和 iPhone 另有测试版。
 
 ## 下载与安装
 
-从 [v1.3.4 正式下载页](https://github.com/Hash012/Banke/releases/tag/v1.3.4) 获取新版 Windows 完整安装包，或点击下表直接下载。本次同步更新 Windows 和 Android；Android 沿用稳定签名，保留原应用数据。校验与实测边界见 [发布记录](docs/RELEASE.md)。**旧 v1.1.0 Release 是不同界面、不同协议的 Go 预览版，不是此版本；不要混装配对。**
+你可以在 [1.3.4 正式下载页](https://github.com/Hash012/Banke/releases/tag/v1.3.4)找到安装包、源码和校验文件。这一版同时更新了 Windows 和 Android，加入了文本导入功能，具体变化和验证情况可以查看[发布记录](docs/RELEASE.md)。
 
-| 文件 | 用途 |
-| --- | --- |
-| [Banke-Community-Setup-1.3.4-x64.exe](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-Setup-1.3.4-x64.exe) | Windows 10/11 x64 完整离线安装包，含文本导入与莲花桌宠；不需要浏览器、Node、Python 或 Go；可选择安装目录 |
-| [Banke-Community-1.3.4-Windows-x64.zip](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-1.3.4-Windows-x64.zip) | Windows 完整便携包；完整解压后启动 `BankeCommunity.exe` |
-| [Banke-Community-Android-1.3.4.apk](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-Android-1.3.4.apk) | Android 8+、仍兼容 APK 的 HarmonyOS；不是 HarmonyOS NEXT 原生 HAP |
-| [Banke-Source.zip](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Source.zip) | 1.3.4 完整公开源码与构建、测试说明 |
-| [SHA256SUMS.txt](https://github.com/Hash012/Banke/releases/download/v1.3.4/SHA256SUMS.txt) | 1.3.4 Windows、Android 与源码成品 SHA-256 校验清单 |
+如果使用 Windows 10 或 Windows 11 的 x64 电脑，下载 [Windows 安装包](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-Setup-1.3.4-x64.exe)后，按提示选择安装位置即可。安装包已经包含运行所需的组件，不需要另外安装浏览器、Node、Python 或 Go。升级时请先正常退出旧版，再运行新版安装包，已有通用版日程和配对会保留。
 
-Windows 包超过 GitHub 普通文件大小上限，应作为 Releases 附件分发；不要提交大 EXE、拆包让用户拼接，或把 Git LFS 指针当成可执行程序。代码仓库直接包含可构建源码。Windows 未配置发布者代码签名。
+如果希望解压后直接使用，可以下载 [Windows 便携包](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-1.3.4-Windows-x64.zip)。请完整解压，再打开其中的 `BankeCommunity.exe`。Windows 安装包和便携包目前都没有发布者代码签名。
 
-macOS 与 iPhone 的补充状态见下方 Apple 测试版；其附件仍为 1.3.2 独立预览，尚未包含本次莲花桌宠实机验收。仓库根目录 `Banke-Source.zip` 为 1.3.4 源码快照，Android 签名保持不变，根目录 `Banke-Android.apk` 为 1.3.4。
+手机版请下载 [Android 安装包](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Community-Android-1.3.4.apk)。它支持 Android 8 及以上系统，也适用于仍能安装 APK 的 HarmonyOS；它不是 HarmonyOS NEXT 的原生 HAP 应用。新版沿用通用版原有签名，升级时请保留应用数据。
 
-## Apple 测试版
+如果想阅读或自行构建程序，可以下载 [1.3.4 源码快照](https://github.com/Hash012/Banke/releases/download/v1.3.4/Banke-Source.zip)，也可以直接克隆本仓库。下载文件的 SHA-256 摘要列在[校验清单](https://github.com/Hash012/Banke/releases/download/v1.3.4/SHA256SUMS.txt)中。仓库根目录的 `Banke-Android.apk` 和 `Banke-Source.zip` 分别对应这一版的手机安装包和源码快照。Windows 完整包体积较大，放在 Releases 附件中分发。
 
-[Apple 预览发行页](https://github.com/Hash012/Banke/releases/tag/v1.3.2-apple-preview.1) · [Apple 构建与验收](docs/APPLE.md) · [iPhone 自行签名说明](mobile/ios/README.md)
+仓库中还保留着旧版发行记录。其中，v1.1.0 是使用 Go 实现的早期预览版，界面和同步协议都与当前版本不同，请勿与新版混装配对。
 
-| 平台 | 下载 | 状态 |
-| --- | --- | --- |
-| Mac Apple Silicon（M 系列） | [DMG](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-arm64-preview.dmg) / [ZIP](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-arm64-preview.zip) | 原生 arm64 构建机运行通过；测试版 |
-| Mac Intel | [DMG](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-x64-preview.dmg) / [ZIP](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-x64-preview.zip) | 原生 Intel 构建机运行通过；测试版 |
-| iPhone | [完整 Xcode 源码](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-Apple-Source-1.3.2-preview.1.zip) | 在自己的 Mac/Xcode 选择团队签名安装；本轮不提供可直接安装的 IPA |
+## 从文字导入日程
 
-Mac 包使用 ad-hoc 完整性签名，未经过 Developer ID 签名或 Apple 公证，首次下载可能被系统拦截。确认来源和摘要后，可参照 [Apple 官方说明](https://support.apple.com/zh-cn/102445) 对单个 App 选择“仍要打开”。安装时将 App 拖入“应用程序”，保留本机日程目录。构建目标为 macOS 12+，目前原生运行验证为 macOS 15；个人设备、Mission Control/触控板、登录启动和 Gatekeeper 首次打开仍待验证。
+如果手头已经有一段课程通知或活动安排，可以在电脑左栏点击“文本识别导入”，手机上则点击顶部的同名按钮。粘贴文字后，点击“识别并预览”，检查每条安排的名称、星期、起止时间、周次、类型和地点，修改妥当后再确认导入。取消预览不会保存到日程表。
 
-下图为原生 macOS 构建机运行实际打包 App 的内部截图，初始日程为空；截图来源和测试边界见 [Apple 验收](docs/APPLE.md)。
+例如，你可以输入“第1-16周（单周）周一、周三 09:00-10:00 数学 @A楼”，也可以写“明天下午三点到五点，项目讨论”。程序能识别常见的日期、中文时间、多个星期和单双周，但复杂的自然语言仍可能识别不全，所以导入前请检查预览。
 
-![macOS 社区版原生运行截图（CI 内部窗口截图）](docs/media/macos-native-ci.png)
+“今天”“明天”“下周”等说法按北京时间计算。如果没有写周次，程序会暂用当前查看的教学周，并把这条安排标为待核对。时间完整但还有疑点的内容会进入日程表，同时出现在“待核对”中；缺少名称、日期、起止时间或有效周次的内容则先保存为草稿，补全后才会排进日程。
 
-## 独立数据与并存
+对于名称、星期、时间和地点都相同的安排，程序会跳过已经存在的周次，只补上尚未添加的部分。待补全草稿只保存在当前设备，成为日程后才能通过原有配对同步到另一端。
 
-| 应用 | 数据与身份 |
-| --- | --- |
-| Windows 通用版 | `%APPDATA%\BankeCommunity`；程序 `BankeCommunity.exe`；应用 ID `org.banke.community.desktop` |
-| macOS 通用版 | `~/Library/Application Support/BankeCommunity`；应用 ID `org.banke.community.desktop` |
-| iOS 源码版 | 应用 ID `org.banke.community.ios`；自身沙盒内原子本地存储，排除系统云备份 |
-| Android 通用版 | 应用 ID `org.banke.community.mobile`；日程和配对保存在该应用独立的私有文件中 |
-| 私人版 | 保持自己的安装、数据和配对，不会被通用版自动导入或覆盖 |
-| 旧 Go 预览版 | 不同应用与协议；不是原地覆盖升级，需用户显式导出 JSON 后再选择导入 |
+这项功能使用离线规则识别，不会把你输入的文字发送给人工智能服务，也不需要 DeepSeek API Key。目前没有提供 DeepSeek 配置入口。
 
-升级或卸载 Windows 通用版不会主动清理日程。不要手动删除 AppData、手机应用数据或配对文件来排查故障。同步不是备份；重要编辑前请导出独立 JSON。Windows 导入会先预览、独立备份当前日程，再检查修订号提交；取消、错误文件或预览后有新编辑时不覆盖。
+下图是在 Windows 原生窗口中，用合成安排演示的导入预览。
 
-## 手机同步
+![文本导入窗口展示了识别结果和可修改的日程字段。](docs/media/text-import-desktop.png)
 
-1. 安装本通用版电脑端和手机端，两端连接可互通的可信私人 Wi-Fi。Mac/iPhone 先阅读上方测试版说明；首次连接允许系统本地网络权限。
-2. 电脑打开“手机自动同步”，开启局域网同步，再点击“允许新手机配对 · 2 分钟”。
-3. 手机填写电脑显示的完整 IPv4 地址，点击连接。地址应包含实际端口，不要固定抄写旧地址。
-4. 在两台设备上核对八位数字一致，再在电脑允许连接。不要把数字或密钥发给别人。
-5. 手机保持半刻在前台。编辑先保存本机，再自动双向同步；断网时继续本地保存，恢复连接后补同步。
+## 莲花桌宠与日程提醒
 
-使用与正式版相同的协议 1：P-256 配对、HKDF 派生密钥、AES-256-GCM 消息及持久化序列号。保留本机/局域网与授权边界，不开放浏览器 CORS，也不关闭防火墙。只在可信局域网使用，不提供公网、云账号或锁屏后台实时同步保证。
+“念念相续”是一朵可以放在桌面上的莲花。它从 Windows 1.3.3 起加入半刻，默认关闭。点击右上角的“❀”，或在桌面菜单中打开“莲花桌宠与提醒”，勾选开启并保存，就可以使用。
 
-电脑会记忆成功端口；若端口已被占用或系统保留，会选择其他可用端口并显示实际地址，不结束占用者。此时在手机更新电脑地址即可，保留原配对。IP 地址或端口变化后旧地址不会自动发现。
+你可以分别开启开始提醒和结束提醒，也可以分别设置提前多久提醒。提前量支持 0 到 1440 分钟，默认在开始前 5 分钟、结束前 1 分钟提醒；填 0 就表示准时提醒。
 
-## 构建与验证
+莲花可以拖到合适的位置，并记住上次的位置。透明区域不会挡住鼠标操作，是否悬浮在其他窗口上方也可以单独选择。提醒会根据实际日期和适用周次触发，跳过已完成的安排；同时有多条提醒时，可以逐条确认。退出后重新打开，也不会重复弹出已经确认过的提醒。
 
-```powershell
-npm ci
-npm test
-npm start
-npm run dist:win
-```
+这些设置只保存在当前电脑。半刻需要保持运行才能提醒，退出软件或关机后不会提醒。原有的桌面右半屏日程挂件仍然可以照常使用。
 
-构建需要 Node 22.12+ 和联网；使用锁文件固定依赖。首次 `npm ci` 下载官方 Electron 并核对 npm 包内 SHA-256。Windows 普通用户运行成品无需这些开发工具。Android 的官方 SDK/Java 构建与签名方法见 [BUILD](docs/BUILD.md)。
+下图来自 Windows 1.3.3 实际打包程序，使用的是合成日程。具体测试方式和仍未覆盖的情况可以查看[验收记录](docs/TESTING.md)。
 
-测试结果区分逻辑回归、真实 Electron/Win32、实际完整安装和用户协助的手机测试。单元测试或解包通过不代表实机通过。参见 [TESTING](docs/TESTING.md)、[WORKLOG](WORKLOG.md) 和 [安全说明](SECURITY.md)。
+![莲花桌宠正在显示“念念相续”的合成日程提醒。](docs/media/lotus-desktop.png)
+
+## 让手机和电脑保持同步
+
+先在电脑和手机上安装通用版半刻，并让两台设备连接到能够互相访问的可信 Wi-Fi。在电脑中打开“手机自动同步”，开启局域网同步，再点击“允许新手机配对 · 2 分钟”。
+
+接着，在手机上填写电脑显示的完整地址并连接。地址里需要包含端口，不要直接沿用以前保存的旧地址。两端出现八位数字后，请确认数字完全一致，再在电脑上允许连接；不要把配对数字或密钥发给别人。
+
+配对完成后，修改会先保存在本机，再自动同步到另一端。断网时仍可以编辑，重新连上后会继续同步。使用时请尽量让手机版保持在前台，因为后台运行可能受到手机省电设置的限制。
+
+电脑会记住上次成功使用的端口。如果端口被占用或被系统保留，半刻会选择其他可用端口，并在界面中显示实际地址，不会结束占用端口的程序。电脑地址发生变化时，在手机上更新地址即可保留原配对；目前还不能自动发现地址变化。
+
+手机和电脑沿用同一套加密同步协议。配对时会建立双方专用的密钥，随后交换的日程会加密，并检查消息顺序，防止过期的修改被重新提交。请在可信的局域网内使用，无需为此关闭防火墙；目前没有云账号或公网同步服务，锁屏后也不能保证实时同步。
+
+如果使用 Mac 或 iPhone，请先阅读下方测试版说明，并在首次连接时允许系统要求的本地网络访问权限。
+
+## 数据与备份
+
+通用版和私人版可以并存，各自保留安装、日程和配对信息。Windows 通用版把数据保存在 `%APPDATA%\BankeCommunity`，程序名称是 `BankeCommunity.exe`；macOS 通用版的数据位于 `~/Library/Application Support/BankeCommunity`。手机端则把日程和配对保存在各自应用的独立存储中，iPhone 源码版还会将这些文件排除在系统云备份之外。
+
+升级或卸载 Windows 通用版不会主动清理日程。排查问题时，请不要删除 AppData、手机应用数据或配对文件。同步也不能代替备份，重要修改前最好单独导出一份 JSON 文件。
+
+Windows 导入备份时，会先显示预览，并为当前日程保存一份独立备份。只有确认文件有效、且预览之后没有其他新修改时，才会提交替换；取消操作或遇到错误都不会覆盖原有日程。早期 Go 预览版的数据也需要先由你导出 JSON，再在新版中选择导入，不会自动迁移。
+
+## 看看实际使用的样子
+
+下面的动图来自 Windows 上实际安装的通用版 1.3.2，展示了从周计划切换到课程列表、修改安排，再保存返回的过程。演示使用合成日程，首次安装的半刻仍从空白开始。视频主要展示日程编辑，后来加入的文本导入和莲花提醒可以查看上方的截图。
+
+[![动图展示了半刻从查看周计划到修改并保存安排的过程。](docs/media/community-demo.gif)](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Demo-1.3.2.mp4)
+
+点击动图可以观看[完整视频](https://github.com/Hash012/Banke/releases/download/v1.3.2/Banke-Community-Demo-1.3.2.mp4)，时长为 16.8 秒，没有音轨。你也可以查看同次录制的[窗口截图](docs/media/community-desktop.png)，或阅读[演示来源说明](docs/media/README.md)。
+
+## macOS 和 iPhone 测试版
+
+Apple 平台目前提供的是[独立的 1.3.2 预览版](https://github.com/Hash012/Banke/releases/tag/v1.3.2-apple-preview.1)，它的附件没有随 Windows 和 Android 的 1.3.4 一起更新。开发进展和测试范围可以查看 [Apple 验收说明](docs/APPLE.md)。
+
+使用 Apple Silicon，也就是 M 系列芯片的 Mac，可以下载 [Apple Silicon 的 DMG 安装镜像](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-arm64-preview.dmg)或 [ZIP 压缩包](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-arm64-preview.zip)。使用 Intel 芯片的 Mac，则请选择 [Intel 的 DMG 安装镜像](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-x64-preview.dmg)或 [ZIP 压缩包](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-1.3.2-macOS-x64-preview.zip)。两种架构都已经在对应的原生构建机上运行验证，但仍作为测试版提供。
+
+Mac 版本使用 ad-hoc 完整性签名，没有经过 Developer ID 签名或 Apple 公证，首次打开时可能被系统拦截。确认下载来源和文件摘要后，可以参照 [Apple 官方说明](https://support.apple.com/zh-cn/102445)，对这一个应用选择“仍要打开”。安装时将应用拖入“应用程序”即可，请保留已有的日程目录。
+
+Mac 的构建目标是 macOS 12 及以上，目前的原生运行验证使用 macOS 15。个人设备上的首次打开、Mission Control、触控板手势和登录启动等情况仍待验证。下图是原生构建机运行实际打包应用时取得的内部窗口截图，初始日程为空。
+
+![macOS 测试版的实际窗口显示了一张空白周计划表。](docs/media/macos-native-ci.png)
+
+iPhone 暂时没有可直接安装的 IPA。你可以下载[完整 Xcode 源码](https://github.com/Hash012/Banke/releases/download/v1.3.2-apple-preview.1/Banke-Community-Apple-Source-1.3.2-preview.1.zip)，在自己的 Mac 上用 Xcode 选择开发团队并签名安装；具体步骤见 [iPhone 构建说明](mobile/ios/README.md)。
+
+## 自行构建与验证
+
+构建 Windows 版本需要 Node 22.12 及以上版本，并且需要联网下载依赖。在仓库目录先执行 `npm ci` 安装锁文件中指定的依赖，再执行 `npm test` 运行测试。开发时可以用 `npm start` 打开程序，需要生成完整安装包和便携包时则执行 `npm run dist:win`。
+
+首次安装依赖时，脚本会下载官方 Electron，并核对 npm 包中记录的 SHA-256 摘要。普通用户直接使用已打包的 Windows 程序即可，不需要安装开发工具。Android 的 Java、官方 SDK 和签名构建方式见[构建说明](docs/BUILD.md)。
+
+测试记录会分别说明哪些结果来自单元测试，哪些来自实际运行的桌面程序、安装后的程序或用户操作的手机。单元测试和解包检查不能代替实机验收；如果想了解具体结果，可以阅读[验收记录](docs/TESTING.md)、[开发记录](WORKLOG.md)和[安全说明](SECURITY.md)。
