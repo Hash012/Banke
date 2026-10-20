@@ -45,6 +45,22 @@ python scripts/build_android.py --sdk C:\Android\Sdk --key .local/signing/commun
 
 APK 当前 min SDK 26、target SDK 34，面向直接 APK 分发；不表示符合未来应用商店政策。原生桥只向打包内页面提供私有文件与受限 LAN HTTP，禁止重定向和非私网目标；加密和合并逻辑由同版本公开网页源码执行。
 
+## 独立安装的新私有手机版
+
+用户在无法取得旧私有签名后要求开发新应用。本机已交付“半刻私有版·新”1.3.4，包名 `cn.banke.personal.mobile`；旧版 `cn.banke.mobile` 和通用版 `org.banke.community.mobile` 均不被覆盖。新建独立身份不等于替换旧应用签名，不要求清数据或取消旧配对。安装后由用户核对数字、允许新增手机配对取得私有电脑版日程；首次默认空白。
+
+`prepare-personal-mobile.py` 从维护中的公开 Java／网页源码创建忽略目录内的独立工程，不读取旧 APK、私人 seed、存档或配对。已有工程目录会拒绝覆盖。通用构建脚本增加 `--mobile-root` 和首次签名名称参数；自定义工程必须指定独立 `--out`，原通用版默认路径与身份保持。
+
+```powershell
+# 仅首次准备；后续保留生成的工程和固定签名，不重跑创建或 --generate-key
+python scripts/prepare-personal-mobile.py
+python scripts/build_android.py --mobile-root .local/private-mobile/personal-app/mobile --sdk .local/android-sdk --key .local/signing/personal-mobile-v1.pk8 --cert .local/signing/personal-mobile-v1-cert.pem --generate-key --signing-name "Banke Personal Android" --out dist/private-mobile-new-1.3.4/Banke-Private-New-Android-1.3.4.apk
+```
+
+本机活动工程在 `.local/private-mobile/personal-app`，新签名位于 `.local/signing/personal-mobile-v1.pk8` 与对应证书，本机备份位于 `.local/signing-backups/personal-mobile-v1`。交付源码 ZIP 包含 Java、网页、构建脚本、证书摘要保护的 BUILD.ps1 和说明，不含签名；再次构建会检查原证书并拒绝自动换签。成品和安装说明位于 `dist/private-mobile-new-1.3.4`，仅本机交付，不进入公共 Release 或 Git。手机实机验收由用户协助，用户已反馈测试通过，具体范围见 TESTING.md。
+
+[Android 应用身份](https://developer.android.com/build/configure-app-module#set-application-id)与[签名规则](https://developer.android.com/studio/publish/app-signing)是独立身份方案的依据。
+
 ## 真机隔离调试
 
 ```powershell

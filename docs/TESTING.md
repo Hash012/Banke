@@ -1,5 +1,21 @@
 # 通用版验收
 
+## 2026-10-20：独立私有手机新应用
+
+用户要求在缺旧签名的情况下开发新应用。本机生成可安装的 `dist/private-mobile-new-1.3.4/Banke-Private-New-Android-1.3.4.apk`，名称“半刻私有版·新”、包名 `cn.banke.personal.mobile`、版本 1.3.4／134；不覆盖旧私有版或通用版。Android 原生 Java 与完整网页源码保存在 `.local/private-mobile/personal-app`，固定签名与本机备份独立保存；交付源码 ZIP 和校验清单不含密钥。未上传新私有成品、工程、签名或测试数据。
+
+- 官方 javac／D8／aapt2／zipalign 构建、apksigner v2／v3 校验通过；aapt 确认新身份、标签和 Activity。12 个 APK 网页资源逐字节匹配工程，首次空白，无旧 APK 课表或存档。APK SHA-256 `f8d171e7d436ff3a39d29c20d6e32d1ca44eecc26bd65fc2e16dcac02ed4c3b5`。
+- 新应用证书 SHA-256 `5bcd36e287e84e8c208d08b93b6ca31f7b75e0c59ecf347a8d319a4e8652d765`，与旧私有及通用身份不同，固定本机签名双份字节一致；旧私有 APK SHA 未变。源码 ZIP 20 个文件、CRC 及签名排除项通过。`validation.json` 与 SHA256SUMS.txt 同目录。
+- 无 Computer Use。Windows 原生 Electron 手机宽度窗口运行 APK 中实际解出的页面，使用合成文件存储桥；私有新版提示、离线文本导入、待补全、重载保存、移除计数、返回键释放 inert、无横向溢出通过，截图已目视核对。证据 `.local/text-mobile-personal-1792460896719/result.json`。这不是 Android 安装或触摸验收。
+- 实际新 APK 的 adapter／WebCrypto 与私有电脑版同步服务代码、临时随机端口 HTTP 服务在独立合成目录往返：两端八位数字相同、允许新配对、手机离线导入与电脑原有合成记录合并、缺时间草稿仅留手机、电脑改名回传、adapter 重载后配对和日程保留均通过。证据 `.local/personal-sync-1792460983054/result.json`。原生传输桥为 Node 测试替身；虽然经过本机内网接口，仍不等于手机 Wi-Fi 真机验收。没有连接实际用户服务、改动正式数据或原配对。
+- 初次集成测试桥把宿主 JSON 对象送给 VM 的严格原型校验器，导致模拟保存失败，后续断言拿到 undefined；改用宿主同 realm 的校验器后通过。修复的是测试桥，生产 Java／网页逻辑未因此放宽。
+- 原通用版默认构建回归：真实重编、身份仍为 `org.banke.community.mobile`、稳定证书与资源校验通过；验证 APK 仅在 `.local/personal-apk-native-test`，已发布 1.3.4 附件和根目录 APK 未替换。`npm test` 73 项，72 通过、1 符号链接权限跳过。
+- 交付工程的 BUILD.ps1 已实际重建成功，使用原新私有签名，不生成替代密钥；重建后包名、版本、Activity、资源及证书摘要仍相同。生成物只留工程自己的 dist，交付主 APK 未替换。证书摘要保护与本机签名备份可供后续同身份升级；未冒称已完成 Android 覆盖安装验收。
+
+2026-10-20 用户在收到新私有手机版 APK 与安装配对步骤后回复“已测试通过”，据此记录为用户实机验收通过。用户未逐项说明设备型号、系统版本或测试步骤，不单独声称权限弹窗、软键盘、后台同步等每项均已覆盖。工具没有操作手机，之前的 Windows／合成测试证据仍按原范围保留。
+
+旧手机未同步的编辑应先同步至私有电脑版，再在新应用手动配对，完成后点“回到今天”。旧应用保留作对照，不自动迁移数据。
+
 ## 2026-10-20：1.3.4 文本导入验收
 
 无 Computer Use。Windows 原生 Electron 运行两版源码的真实渲染器／preload／IPC；DOM 自动化与内部截图不等于物理输入或 Android 真机验收。

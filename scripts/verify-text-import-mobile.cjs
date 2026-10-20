@@ -1,6 +1,10 @@
 'use strict';
 const {app,BrowserWindow,ipcMain}=require('electron'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),edition=process.argv.find(x=>x.startsWith('--edition='))?.slice(10)||'community';assert(['community','private'].includes(edition));
+const root=path.resolve(__dirname,'..'),edition=process.argv.find(x=>x.startsWith('--edition='))?.slice(10)||'community';assert(['community','private','personal'].includes(edition));
+const webArgument=process.argv.find(x=>x.startsWith('--web-root='))?.slice(11);
+if(edition==='personal')assert(webArgument,'Personal app test requires its actual web root');
+const webRoot=webArgument?path.resolve(webArgument):path.join(root,'.local/text-mobile-fixtures',edition);
+assert(webRoot.startsWith(path.join(root,'.local')+path.sep),'Test pages must stay in the isolated workspace');
 // Match the production Windows renderer compatibility configuration.
 if(process.platform==='win32')app.disableHardwareAcceleration();
 const evidence=path.join(root,'.local','text-mobile-'+edition+'-'+Date.now());fs.mkdirSync(evidence,{recursive:true});app.setPath('userData',path.join(evidence,'profile'));
@@ -17,7 +21,8 @@ async function capture(n){w.show();w.webContents.invalidate();await pause(1000);
 app.whenReady().then(async()=>{
  w=new BrowserWindow({width:402,height:900,show:true,webPreferences:{preload:path.join(__dirname,'text-import-mobile-preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
  w.webContents.on('console-message',e=>{if(e.level===3||e.level==='error')errors.push(e.message);});w.webContents.on('preload-error',(_e,_p,e)=>errors.push(e.message));
- await w.loadFile(path.join(root,'.local/text-mobile-fixtures',edition,'index.html'));await until(()=>js("!!window.BankeHost&&!document.getElementById('app').getAttribute('aria-busy').includes('true')"),'boot');
+ await w.loadFile(path.join(webRoot,'index.html'));await until(()=>js("!!window.BankeHost&&!document.getElementById('app').getAttribute('aria-busy').includes('true')"),'boot');
+ if(edition==='personal')assert(await js("document.body.textContent.includes('私有版·新')&&document.body.textContent.includes('旧版和旧配对保留')"));
  await capture('home');await click('textImportButton');await js("document.getElementById('textImportInput').value="+JSON.stringify('第7周 周三 14:00-15:00 手机导入验收\n明天写报告')+";document.getElementById('textImportParse').click();true");await until(()=>js("document.querySelectorAll('.ti-card').length===2"),'preview');
  assert(await js("document.documentElement.scrollWidth<=innerWidth"));await capture('preview-portrait');
  await click('textImportConfirm');await until(()=>js("document.getElementById('textImportDialog').hidden"),'save');assert.equal(JSON.parse(fs.readFileSync(filename)).state.events.length,1);assert.equal(await js("document.getElementById('textPendingCount').textContent"),'1');
