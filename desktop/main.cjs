@@ -14,7 +14,7 @@ const { createSyncService } = require("./lib/sync-service.cjs");
 const { createLotusWindow } = require("./lib/lotus-window.cjs");
 const { createTextDrafts } = require("./lib/text-import-drafts.cjs");
 
-const VERSION = "1.3.4";
+const VERSION = "1.3.5";
 const APP_ID = "org.banke.community.desktop";
 const WINDOW_TITLE = "半刻·我的周计划";
 const MENU_ACTIONS = new Set(["add", "backup", "import", "print", "undo", "help"]);

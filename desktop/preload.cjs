@@ -36,7 +36,7 @@ async function invoke(channel, value) {
 
 if (process.isMainFrame !== false) {
   contextBridge.exposeInMainWorld("BankeDesktop", Object.freeze({
-    version: "1.3.4",
+    version: "1.3.5",
     loadState: () => remember(sendSync("banke:load-state")),
     readTextDrafts: () => sendSync("banke:text-drafts-read"),
     stageTextDrafts: rows => sendSync("banke:text-drafts-stage", rows),

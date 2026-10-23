@@ -13,6 +13,26 @@
     $('timing').textContent=(remaining?'约 '+remaining+' 分钟后':'现在')+(item.kind==='start'?'开始':'结束')+' · '+time;
     $('location').textContent=item.location;$('location').title=item.location;
   }
+  // Read the actual petal animation phase, so captions stay aligned when a
+  // reminder changes the breath from seven seconds to three, or after resume.
+  const quiet=$('quiet'),petals=document.querySelector('.petals');
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  let captionFrame;
+  function caption(){
+    const animation=petals.getAnimations().find(a=>a.animationName==='breathe'||a.animationName==='bloom');
+    const progress=animation?.effect.getComputedTiming().progress;
+    const still=reduced.matches;
+    const phase=still?'still':progress!=null&&progress>=.5?'exhale':'inhale';
+    const text=still?'半刻 · 念念相续 · 无喜无惧':phase==='inhale'?'半刻 · 念念相续':'半刻 · 无喜无惧';
+    if(quiet.textContent!==text){quiet.textContent=text;regions();}
+    quiet.dataset.phase=phase;
+    const half=progress==null?0.5:(progress%0.5)*2;
+    // Fade out at each half-breath boundary, then bring in the next phrase.
+    quiet.style.opacity=still?'1':String(Math.min(1,half/.12,(1-half)/.12));
+    if(!still)captionFrame=requestAnimationFrame(caption);
+  }
+  reduced.addEventListener('change',()=>{cancelAnimationFrame(captionFrame);caption();});
+  caption();
   D.onView(render);D.ready();
   $('dismiss').onclick=()=>D.dismiss();$('open').onclick=()=>D.open();$('settings').onclick=()=>D.settings();
   setInterval(()=>render(current),1000);

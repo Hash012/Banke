@@ -49,7 +49,7 @@ electron.app.on('will-quit',()=>log('will-quit',{completed}));
      clearInterval(observe);
      assert(JSON.parse(fs.readFileSync(path.join(evidence,'native-input-result.json'),'utf8')).ok);await capture(pet,'lotus-after-native-drag');
    }
-   assert.equal(await js(pet,'document.getElementById("quiet").textContent'),'半刻 · 念念相续');
+   assert.match(await js(pet,'document.getElementById("quiet").textContent'),/^半刻 · (念念相续|无喜无惧)$/);
    await capture(pet,'lotus-cold');assert.equal(errors.length,0,JSON.stringify(errors));save('result',{ok:true,edition,phase,method:'Native Windows Electron; real preload and DOM/IPC; internal capture',settingsPersisted:true,noDuplicateAfterRestart:true,laterOccurrenceObserved:laterOccurrence,copyVerified:true,errors});completed=true;electron.app.quit();return;
  }
  const loaded=await js(editor,'window.BankeDesktop.loadState()');assert(loaded.ok);assert.equal(loaded.state.events.length,0);
